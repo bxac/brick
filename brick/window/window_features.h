@@ -7,7 +7,7 @@
 #include "include/internal/cef_types_wrappers.h"
 #include "include/cef_base.h"
 
-class WindowFeatures : public CefBase {
+class WindowFeatures : public CefBaseRefCounted {
 
  public:
   explicit WindowFeatures(const CefPopupFeatures& popupFeatures);

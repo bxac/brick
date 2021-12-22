@@ -11,11 +11,11 @@
 #include "brick/event/event_bus.h"
 #include "brick/event/download_progress_event.h"
 #include "brick/event/download_complete_event.h"
-
+#define OVERRIDE override
 
 typedef struct _LauncherEntry LauncherEntry;
 
-class UnityLauncher : public CefBase,
+class UnityLauncher : public CefBaseRefCounted,
                       public EventHandler<DownloadProgressEvent>,
                       public EventHandler<DownloadCompleteEvent>{
 

@@ -9,7 +9,7 @@
 #include "include/cef_base.h"
 #include "brick/brick_types.h"
 
-class BaseIcon : public CefBase {
+class BaseIcon : public CefBaseRefCounted {
 
  public:
   explicit BaseIcon(std::string icons_dir);

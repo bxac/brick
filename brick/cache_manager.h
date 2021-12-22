@@ -8,7 +8,7 @@
 
 #include "include/cef_base.h"
 
-class CacheManager : public CefBase {
+class CacheManager : public CefBaseRefCounted {
  public:
   enum TYPE {
     DEFAULT = 0,

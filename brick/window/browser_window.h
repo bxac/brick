@@ -24,7 +24,7 @@
 
 #include "include/base/cef_logging.h"
 
-class BrowserWindow : public CefBase {
+class BrowserWindow : public CefBaseRefCounted {
 
  public:
   BrowserWindow();

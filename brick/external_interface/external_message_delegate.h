@@ -9,7 +9,7 @@
 #include "include/cef_process_message.h"
 #include "brick/api_error.h"
 
-class ExternalMessageDelegate : public virtual CefBase {
+class ExternalMessageDelegate : public virtual CefBaseRefCounted {
  public:
   explicit ExternalMessageDelegate(std::string message_namespace)
       : message_namespace_(message_namespace) { }

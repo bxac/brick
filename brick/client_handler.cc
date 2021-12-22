@@ -28,7 +28,7 @@
 
 namespace {
 
-  CefRefPtr<ClientHandler> g_instance = NULL;
+  CefRefPtr<ClientHandler> g_instance = nullptr;
   const char kResourcesPath[]         = "/desktop_app/internals/";
   const char kWebResourcePath[]       = "/web/";
   const char kTemporaryPagePath[]     = "/temp-pages/";
@@ -41,9 +41,9 @@ namespace {
 ClientHandler::ClientHandler()
     : is_idle_(false),
       idle_pending_(true),
-      main_handle_(NULL),
-      indicator_handle_(NULL),
-      account_manager_(NULL),
+      main_handle_(nullptr),
+      indicator_handle_(nullptr),
+      account_manager_(nullptr),
       last_temporary_page_(0),
       in_shutdown_state_(false),
 #ifdef __linux__
@@ -55,7 +55,7 @@ ClientHandler::ClientHandler()
 }
 
 ClientHandler::~ClientHandler() {
-  g_instance = NULL;
+  g_instance = nullptr;
 }
 
 // static
@@ -72,9 +72,10 @@ ClientHandler::Initialize() {
   return true;
 }
 
+/*
 void
-ClientHandler::OnWindowCreated(CefRefPtr<CefBrowser> browser) {
-  CefWindowHandle window = browser->GetHost()->GetWindowHandle();
+ClientHandler::OnWindowCreated(CefRefPtr<CefWindow> window) {
+  //CefWindowHandle window = browser->GetHost()->GetWindowHandle();
   if (browser->IsPopup()) {
     window_util::InitWindow(window, false);
     if (last_popup_features_.get() && last_popup_features_->topmost) {
@@ -86,6 +87,7 @@ ClientHandler::OnWindowCreated(CefRefPtr<CefBrowser> browser) {
     window_util::InitWindow(window, true);
   }
 }
+*/
 
 void
 ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -111,12 +113,13 @@ ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
       if (last_popup_features_->topmost)
         window->Stick();
     }
-    last_popup_features_ = NULL;
+    last_popup_features_ = nullptr;
   }
   // Add to the list of existing browsers.
   browser_list_.push_back(browser);
 }
 
+/*
 bool
 ClientHandler::OnCloseBrowser(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_UI_THREAD();
@@ -138,6 +141,7 @@ ClientHandler::OnCloseBrowser(CefRefPtr<CefBrowser> browser) {
 
   return handled;
 }
+*/
 
 void
 ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
@@ -244,7 +248,7 @@ ClientHandler::CloseAllBrowsers(bool force_close) {
   if (!CefCurrentlyOn(TID_UI)) {
     // Execute on the UI thread.
     CefPostTask(TID_UI,
-        base::Bind(&ClientHandler::CloseAllBrowsers, this, force_close));
+        base::BindOnce(&ClientHandler::CloseAllBrowsers, this, force_close));
     return;
   }
 
@@ -260,7 +264,7 @@ ClientHandler::CloseAllPopups(bool force_close) {
   if (!CefCurrentlyOn(TID_UI)) {
     // Execute on the UI thread.
     CefPostTask(TID_UI,
-       base::Bind(&ClientHandler::CloseAllBrowsers, this, force_close));
+       base::BindOnce(&ClientHandler::CloseAllBrowsers, this, force_close));
     return;
   }
 
@@ -353,7 +357,7 @@ ClientHandler::InitDownload(const std::string &url, const std::string &filename)
   if (!CefCurrentlyOn(TID_UI)) {
     // Execute on the UI thread.
     CefPostTask(TID_UI,
-                base::Bind(&ClientHandler::InitDownload, this, url, filename));
+                base::BindOnce(&ClientHandler::InitDownload, this, url, filename));
     return;
   }
 
@@ -450,7 +454,7 @@ CefRefPtr<DownloadHistoryItem>
 ClientHandler::GetDownloadHistoryItem(const std::string &id) {
   if (!download_history_.count(id)) {
     LOG(WARNING) << "Downloaded file id '" << id << "' was not found while path finding.";
-    return NULL;
+    return nullptr;
   }
 
   return download_history_[id];
@@ -468,6 +472,7 @@ ClientHandler::OnBeforePopup(
     CefWindowInfo& windowInfo,
     CefRefPtr<CefClient>& client,
     CefBrowserSettings& settings,
+    CefRefPtr<CefDictionaryValue>& extra_info,
     bool* no_javascript_access) {
   CEF_REQUIRE_IO_THREAD();
 
@@ -487,21 +492,21 @@ ClientHandler::OnBeforePopup(
     return true;
   }
 
-  windowInfo.width = static_cast<unsigned int>(popupFeatures.width);
-  windowInfo.height = static_cast<unsigned int>(popupFeatures.height);
+  windowInfo.bounds.width = static_cast<unsigned int>(popupFeatures.width);
+  windowInfo.bounds.height = static_cast<unsigned int>(popupFeatures.height);
 
   // TODO(buglloc): Fix it!
   // For now we disable scaling popup width and height due to IM settings dialog issues
   // But we still must calculate right position for it
 
   // Calculate window placement
-  if (!windowInfo.x && !windowInfo.y) {
-    unsigned int width = static_cast<unsigned int>(windowInfo.width * window_util::GetDeviceScaleFactor());
-    unsigned int height = static_cast<unsigned int>(windowInfo.height * window_util::GetDeviceScaleFactor());
+  if (!windowInfo.bounds.x && !windowInfo.bounds.y) {
+    unsigned int width = static_cast<unsigned int>(windowInfo.bounds.width * window_util::GetDeviceScaleFactor());
+    unsigned int height = static_cast<unsigned int>(windowInfo.bounds.height * window_util::GetDeviceScaleFactor());
 
     CefRect screen_rect = window_util::GetDefaultScreenRect();
-    windowInfo.x = screen_rect.x + (screen_rect.width - width) / 2;
-    windowInfo.y = screen_rect.y + (screen_rect.height - height) / 2;
+    windowInfo.bounds.x = screen_rect.x + (screen_rect.width - width) / 2;
+    windowInfo.bounds.y = screen_rect.y + (screen_rect.height - height) / 2;
   }
 
   // TODO(buglloc): R&D, too ugly hack to catch popup features in OnWindowCreated
@@ -513,6 +518,7 @@ bool
 ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request,
+    bool user_gesture,
     bool is_redirect) {
 
   std::string url = request->GetURL();
@@ -524,12 +530,11 @@ ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-cef_return_value_t
-ClientHandler::OnBeforeResourceLoad(
+CefResourceRequestHandler::ReturnValue ClientHandler::OnBeforeResourceLoad(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request,
-    CefRefPtr<CefRequestCallback> callback) {
+    CefRefPtr<CefCallback> callback) {
   CEF_REQUIRE_IO_THREAD();
 
   std::string url = request->GetURL();
@@ -549,7 +554,7 @@ ClientHandler::GetResourceHandler(
 
   std::string url = request->GetURL();
   if (url.find(kResourcesPath) == std::string::npos)
-    return NULL;
+    return nullptr;
 
   return resource_manager_->GetResourceHandler(browser, frame, request);
 }
@@ -557,6 +562,7 @@ ClientHandler::GetResourceHandler(
 bool
 ClientHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message) {
   bool handled = false;
@@ -649,7 +655,7 @@ ClientHandler::SetIndicatorHandle(CefRefPtr<BrickIndicator> handle) {
   if (!CefCurrentlyOn(TID_UI)) {
     // Execute on the UI thread.
     CefPostTask(TID_UI,
-                base::Bind(&ClientHandler::SetIndicatorHandle, this, handle));
+                base::BindOnce(&ClientHandler::SetIndicatorHandle, this, handle));
     return;
   }
 
@@ -693,10 +699,10 @@ void
 ClientHandler::SwitchAccount(int id) {
   CloseAllPopups(true);
   // Clear cookies
-  CefCookieManager::GetGlobalManager(NULL)->DeleteCookies(
+  CefCookieManager::GetGlobalManager(nullptr)->DeleteCookies(
       account_manager_->GetCurrentAccount()->GetOrigin(),
       CefString(),
-      NULL
+      nullptr
   );
 
   if (!download_map_.empty()) {
@@ -726,7 +732,7 @@ ClientHandler::SendJSEvent(CefRefPtr<CefBrowser> browser, const CefString& name,
   if (!data.empty())
     message->GetArgumentList()->SetString(1, data);
 
-  browser->SendProcessMessage(PID_RENDERER, message);
+  browser->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
 
   return true;
 }
@@ -914,10 +920,10 @@ ClientHandler::SetupResourceManager() {
   // Default MimeTypeResolver is broken on Debug build by thread restrictions:
   // "Function marked as IO-only was called from a thread that disallows IO!"
   // So we set custom and very simple resolver
-  resource_manager_->SetMimeTypeResolver(base::Bind(resource_util::GetMimeType));
+  resource_manager_->SetMimeTypeResolver(base::BindRepeating(resource_util::GetMimeType));
 
   // Add the URL filter.
-  resource_manager_->SetUrlFilter(base::Bind(resource_util::UrlToResourcePath));
+  resource_manager_->SetUrlFilter(base::BindRepeating(resource_util::UrlToResourcePath));
 
   // Desktop media preview (screen or window).
   resource_manager_->AddProvider(new DesktopMediaResourceProvider(kDesktopMediaPath), 97, "");

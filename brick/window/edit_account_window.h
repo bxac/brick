@@ -9,6 +9,8 @@
 #include "brick/window/base_window.h"
 #include "brick/account.h"
 
+#define OVERRIDE override
+
 class EditAccountWindow : public BaseWindow {
 
  public:

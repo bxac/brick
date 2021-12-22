@@ -13,7 +13,7 @@
 #include "brick/helper.h"
 
 
-class DownloadHistoryItem : public CefBase {
+class DownloadHistoryItem : public CefBaseRefCounted {
  public:
 
   DownloadHistoryItem(const std::string url, const std::string path, const std::string name, const std::time_t date)

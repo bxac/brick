@@ -7,6 +7,9 @@
 # Source files.
 #
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
+include("macros")
+
 # desktop sources.
 set(BRICK_SRCS
   brick_app.cc
@@ -241,18 +244,19 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CEF_LIBRARIES_ARCHIVE_HASH    "8ed11e59556f77de7249804a6eb32fdf88f1236a7b22bc6acae0894564d4c2c5")
   endif()
 
-  DOWNLOAD_EXTRACT(
-    ${CEF_LIBRARIES_ARCHIVE_URL}
-    "${CMAKE_SOURCE_DIR}/Release"
-    ${CEF_LIBRARIES_ARCHIVE_HASH}
-    "3.2454.1344.g2782fb8.${PROJECT_ARCH}"
-  )
+#  DOWNLOAD_EXTRACT(
+#    ${CEF_LIBRARIES_ARCHIVE_URL}
+#    "${CMAKE_SOURCE_DIR}/Release"
+#    ${CEF_LIBRARIES_ARCHIVE_HASH}
+#    "3.2454.1344.g2782fb8.${PROJECT_ARCH}"
+#  )
 endif()
 
 # Executable target.
 add_executable(${CEF_TARGET} ${BRICK_SRCS} ${BRICK_EMBED_FILES})
 add_dependencies(${CEF_TARGET} libcef_dll_wrapper)
 target_link_libraries(${CEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS} ${CMAKE_DL_LIBS})
+target_include_directories(${CEF_TARGET} PRIVATE ..)
 install(
     TARGETS
         brick

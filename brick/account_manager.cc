@@ -13,7 +13,7 @@
 
 AccountManager::AccountManager()
     : initialized_(false),
-     current_account_(NULL),
+     current_account_(nullptr),
      last_id_(0) {
 }
 
@@ -62,7 +62,7 @@ CefRefPtr<Account>
 AccountManager::GetById(int id) {
   if (accounts_.count(id) == 0) {
     LOG(WARNING) << "Non existent account: " << id;
-    return NULL;
+    return nullptr;
   }
 
   return accounts_[id];

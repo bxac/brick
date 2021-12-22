@@ -45,31 +45,31 @@ class CefBrowser;
 // Information about a specific web plugin.
 ///
 /*--cef(source=library)--*/
-class CefWebPluginInfo : public virtual CefBase {
+class CefWebPluginInfo : public virtual CefBaseRefCounted {
  public:
   ///
-  // Returns the plugin name (i.e. Flash).
+  // Returns the plugin name.
   ///
   /*--cef()--*/
-  virtual CefString GetName() =0;
+  virtual CefString GetName() = 0;
 
   ///
   // Returns the plugin file path (DLL/bundle/library).
   ///
   /*--cef()--*/
-  virtual CefString GetPath() =0;
+  virtual CefString GetPath() = 0;
 
   ///
   // Returns the version of the plugin (may be OS-specific).
   ///
   /*--cef()--*/
-  virtual CefString GetVersion() =0;
+  virtual CefString GetVersion() = 0;
 
   ///
   // Returns a description of the plugin from the version information.
   ///
   /*--cef()--*/
-  virtual CefString GetDescription() =0;
+  virtual CefString GetDescription() = 0;
 };
 
 ///
@@ -77,7 +77,7 @@ class CefWebPluginInfo : public virtual CefBase {
 // this class will be called on the browser process UI thread.
 ///
 /*--cef(source=client)--*/
-class CefWebPluginInfoVisitor : public virtual CefBase {
+class CefWebPluginInfoVisitor : public virtual CefBaseRefCounted {
  public:
   ///
   // Method that will be called once for each plugin. |count| is the 0-based
@@ -86,7 +86,9 @@ class CefWebPluginInfoVisitor : public virtual CefBase {
   // no plugins are found.
   ///
   /*--cef()--*/
-  virtual bool Visit(CefRefPtr<CefWebPluginInfo> info, int count, int total) =0;
+  virtual bool Visit(CefRefPtr<CefWebPluginInfo> info,
+                     int count,
+                     int total) = 0;
 };
 
 ///
@@ -105,43 +107,12 @@ void CefVisitWebPluginInfo(CefRefPtr<CefWebPluginInfoVisitor> visitor);
 void CefRefreshWebPlugins();
 
 ///
-// Add a plugin path (directory + file). This change may not take affect until
-// after CefRefreshWebPlugins() is called. Can be called on any thread in the
-// browser process.
-///
-/*--cef()--*/
-void CefAddWebPluginPath(const CefString& path);
-
-///
-// Add a plugin directory. This change may not take affect until after
-// CefRefreshWebPlugins() is called. Can be called on any thread in the browser
-// process.
-///
-/*--cef()--*/
-void CefAddWebPluginDirectory(const CefString& dir);
-
-///
-// Remove a plugin path (directory + file). This change may not take affect
-// until after CefRefreshWebPlugins() is called. Can be called on any thread in
-// the browser process.
-///
-/*--cef()--*/
-void CefRemoveWebPluginPath(const CefString& path);
-
-///
 // Unregister an internal plugin. This may be undone the next time
 // CefRefreshWebPlugins() is called. Can be called on any thread in the browser
 // process.
 ///
 /*--cef()--*/
 void CefUnregisterInternalWebPlugin(const CefString& path);
-
-///
-// Force a plugin to shutdown. Can be called on any thread in the browser
-// process but will be executed on the IO thread.
-///
-/*--cef()--*/
-void CefForceWebPluginShutdown(const CefString& path);
 
 ///
 // Register a plugin crash. Can be called on any thread in the browser process
@@ -155,7 +126,7 @@ void CefRegisterWebPluginCrash(const CefString& path);
 // of this class will be called on the browser process IO thread.
 ///
 /*--cef(source=client)--*/
-class CefWebPluginUnstableCallback : public virtual CefBase {
+class CefWebPluginUnstableCallback : public virtual CefBaseRefCounted {
  public:
   ///
   // Method that will be called for the requested plugin. |unstable| will be
@@ -163,8 +134,7 @@ class CefWebPluginUnstableCallback : public virtual CefBase {
   // seconds.
   ///
   /*--cef()--*/
-  virtual void IsUnstable(const CefString& path,
-                          bool unstable) =0;
+  virtual void IsUnstable(const CefString& path, bool unstable) = 0;
 };
 
 ///
@@ -174,6 +144,5 @@ class CefWebPluginUnstableCallback : public virtual CefBase {
 /*--cef()--*/
 void CefIsWebPluginUnstable(const CefString& path,
                             CefRefPtr<CefWebPluginUnstableCallback> callback);
-
 
 #endif  // CEF_INCLUDE_CEF_WEB_PLUGIN_H_

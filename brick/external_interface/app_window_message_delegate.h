@@ -5,6 +5,8 @@
 
 #include "brick/external_interface/external_message_delegate.h"
 
+#define OVERRIDE override
+
 class ExternalAppWindowMessageDelegate : public ExternalMessageDelegate {
  public:
   ExternalAppWindowMessageDelegate();

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,34 +9,38 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=cfac126645b325004b278b70c2f305312346d6ae$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_POST_DATA_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_POST_DATA_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_request.h"
 #include "include/capi/cef_request_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_request.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
-class CefPostDataCToCpp
-    : public CefCToCpp<CefPostDataCToCpp, CefPostData, cef_post_data_t> {
+class CefPostDataCToCpp : public CefCToCppRefCounted<CefPostDataCToCpp,
+                                                     CefPostData,
+                                                     cef_post_data_t> {
  public:
   CefPostDataCToCpp();
+  virtual ~CefPostDataCToCpp();
 
   // CefPostData methods.
-  bool IsReadOnly() OVERRIDE;
-  size_t GetElementCount() OVERRIDE;
-  void GetElements(ElementVector& elements) OVERRIDE;
-  bool RemoveElement(CefRefPtr<CefPostDataElement> element) OVERRIDE;
-  bool AddElement(CefRefPtr<CefPostDataElement> element) OVERRIDE;
-  void RemoveElements() OVERRIDE;
+  bool IsReadOnly() override;
+  bool HasExcludedElements() override;
+  size_t GetElementCount() override;
+  void GetElements(ElementVector& elements) override;
+  bool RemoveElement(CefRefPtr<CefPostDataElement> element) override;
+  bool AddElement(CefRefPtr<CefPostDataElement> element) override;
+  void RemoveElements() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_POST_DATA_CTOCPP_H_

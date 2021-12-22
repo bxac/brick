@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,55 +9,54 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=0d464b5cc5cafab59224cc9904cbbbddce9bcd3e$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_BROWSER_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_BROWSER_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
 #include <vector>
-#include "include/cef_browser.h"
 #include "include/capi/cef_browser_capi.h"
-#include "include/cef_client.h"
 #include "include/capi/cef_client_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_browser.h"
+#include "include/cef_client.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefBrowserCToCpp
-    : public CefCToCpp<CefBrowserCToCpp, CefBrowser, cef_browser_t> {
+    : public CefCToCppRefCounted<CefBrowserCToCpp, CefBrowser, cef_browser_t> {
  public:
   CefBrowserCToCpp();
+  virtual ~CefBrowserCToCpp();
 
   // CefBrowser methods.
-  CefRefPtr<CefBrowserHost> GetHost() OVERRIDE;
-  bool SpellCheckWord(const CefString& word,
-      std::vector<CefString>& suggestions) OVERRIDE;
-  bool CanGoBack() OVERRIDE;
-  void GoBack() OVERRIDE;
-  bool CanGoForward() OVERRIDE;
-  void GoForward() OVERRIDE;
-  bool IsLoading() OVERRIDE;
-  void Reload() OVERRIDE;
-  void ReloadIgnoreCache() OVERRIDE;
-  void StopLoad() OVERRIDE;
-  int GetIdentifier() OVERRIDE;
-  bool IsSame(CefRefPtr<CefBrowser> that) OVERRIDE;
-  bool IsPopup() OVERRIDE;
-  bool HasDocument() OVERRIDE;
-  CefRefPtr<CefFrame> GetMainFrame() OVERRIDE;
-  CefRefPtr<CefFrame> GetFocusedFrame() OVERRIDE;
-  CefRefPtr<CefFrame> GetFrame(int64 identifier) OVERRIDE;
-  CefRefPtr<CefFrame> GetFrame(const CefString& name) OVERRIDE;
-  size_t GetFrameCount() OVERRIDE;
-  void GetFrameIdentifiers(std::vector<int64>& identifiers) OVERRIDE;
-  void GetFrameNames(std::vector<CefString>& names) OVERRIDE;
-  bool SendProcessMessage(CefProcessId target_process,
-      CefRefPtr<CefProcessMessage> message) OVERRIDE;
+  bool IsValid() override;
+  CefRefPtr<CefBrowserHost> GetHost() override;
+  bool CanGoBack() override;
+  void GoBack() override;
+  bool CanGoForward() override;
+  void GoForward() override;
+  bool IsLoading() override;
+  void Reload() override;
+  void ReloadIgnoreCache() override;
+  void StopLoad() override;
+  int GetIdentifier() override;
+  bool IsSame(CefRefPtr<CefBrowser> that) override;
+  bool IsPopup() override;
+  bool HasDocument() override;
+  CefRefPtr<CefFrame> GetMainFrame() override;
+  CefRefPtr<CefFrame> GetFocusedFrame() override;
+  CefRefPtr<CefFrame> GetFrame(int64 identifier) override;
+  CefRefPtr<CefFrame> GetFrame(const CefString& name) override;
+  size_t GetFrameCount() override;
+  void GetFrameIdentifiers(std::vector<int64>& identifiers) override;
+  void GetFrameNames(std::vector<CefString>& names) override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_BROWSER_CTOCPP_H_

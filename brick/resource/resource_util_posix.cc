@@ -64,7 +64,7 @@ namespace resource_util {
         + resource_name;
 
     if (!FileExists(path.c_str()))
-      return NULL;
+      return nullptr;
 
     return CefStreamReader::CreateForFile(path);
   }
@@ -72,7 +72,7 @@ namespace resource_util {
   CefRefPtr<CefStreamReader>
   GetBinaryFileReader(const std::string& path) {
     if (!FileExists(path.c_str()))
-      return NULL;
+      return nullptr;
 
     return CefStreamReader::CreateForFile(path);
   }

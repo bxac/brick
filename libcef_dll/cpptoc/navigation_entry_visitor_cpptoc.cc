@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,19 +9,25 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=c27e2f2b230edc452cd99942da0d93f6fd8e36ac$
+//
 
 #include "libcef_dll/cpptoc/navigation_entry_visitor_cpptoc.h"
 #include "libcef_dll/ctocpp/navigation_entry_ctocpp.h"
-
+#include "libcef_dll/shutdown_checker.h"
 
 namespace {
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
 
-int CEF_CALLBACK navigation_entry_visitor_visit(
-    struct _cef_navigation_entry_visitor_t* self,
-    struct _cef_navigation_entry_t* entry, int current, int index,
-    int total) {
+int CEF_CALLBACK
+navigation_entry_visitor_visit(struct _cef_navigation_entry_visitor_t* self,
+                               struct _cef_navigation_entry_t* entry,
+                               int current,
+                               int index,
+                               int total) {
+  shutdown_checker::AssertNotShutdown();
+
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -34,9 +40,7 @@ int CEF_CALLBACK navigation_entry_visitor_visit(
 
   // Execute
   bool _retval = CefNavigationEntryVisitorCppToC::Get(self)->Visit(
-      CefNavigationEntryCToCpp::Wrap(entry),
-      current?true:false,
-      index,
+      CefNavigationEntryCToCpp::Wrap(entry), current ? true : false, index,
       total);
 
   // Return type: bool
@@ -45,26 +49,31 @@ int CEF_CALLBACK navigation_entry_visitor_visit(
 
 }  // namespace
 
-
 // CONSTRUCTOR - Do not edit by hand.
 
 CefNavigationEntryVisitorCppToC::CefNavigationEntryVisitorCppToC() {
   GetStruct()->visit = navigation_entry_visitor_visit;
 }
 
-template<> CefRefPtr<CefNavigationEntryVisitor> CefCppToC<CefNavigationEntryVisitorCppToC,
-    CefNavigationEntryVisitor, cef_navigation_entry_visitor_t>::UnwrapDerived(
-    CefWrapperType type, cef_navigation_entry_visitor_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
-  return NULL;
+// DESTRUCTOR - Do not edit by hand.
+
+CefNavigationEntryVisitorCppToC::~CefNavigationEntryVisitorCppToC() {
+  shutdown_checker::AssertNotShutdown();
 }
 
-#ifndef NDEBUG
-template<> base::AtomicRefCount CefCppToC<CefNavigationEntryVisitorCppToC,
-    CefNavigationEntryVisitor, cef_navigation_entry_visitor_t>::DebugObjCt =
-    0;
-#endif
+template <>
+CefRefPtr<CefNavigationEntryVisitor>
+CefCppToCRefCounted<CefNavigationEntryVisitorCppToC,
+                    CefNavigationEntryVisitor,
+                    cef_navigation_entry_visitor_t>::
+    UnwrapDerived(CefWrapperType type, cef_navigation_entry_visitor_t* s) {
+  NOTREACHED() << "Unexpected class type: " << type;
+  return nullptr;
+}
 
-template<> CefWrapperType CefCppToC<CefNavigationEntryVisitorCppToC,
-    CefNavigationEntryVisitor, cef_navigation_entry_visitor_t>::kWrapperType =
-    WT_NAVIGATION_ENTRY_VISITOR;
+template <>
+CefWrapperType
+    CefCppToCRefCounted<CefNavigationEntryVisitorCppToC,
+                        CefNavigationEntryVisitor,
+                        cef_navigation_entry_visitor_t>::kWrapperType =
+        WT_NAVIGATION_ENTRY_VISITOR;

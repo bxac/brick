@@ -9,6 +9,8 @@
 #include "include/wrapper/cef_resource_manager.h"
 #include "brick/common/app_settings.h"
 
+#define OVERRIDE override
+
 class DesktopMediaResourceProvider : public CefResourceManager::Provider {
  public:
   explicit DesktopMediaResourceProvider(const std::string& url_path);

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,38 +9,42 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=fee097f9fbb21c7c94a7286f0e3adf1ddc0f0a69$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_NAVIGATION_ENTRY_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_NAVIGATION_ENTRY_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_navigation_entry.h"
 #include "include/capi/cef_navigation_entry_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_navigation_entry.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefNavigationEntryCToCpp
-    : public CefCToCpp<CefNavigationEntryCToCpp, CefNavigationEntry,
-        cef_navigation_entry_t> {
+    : public CefCToCppRefCounted<CefNavigationEntryCToCpp,
+                                 CefNavigationEntry,
+                                 cef_navigation_entry_t> {
  public:
   CefNavigationEntryCToCpp();
+  virtual ~CefNavigationEntryCToCpp();
 
   // CefNavigationEntry methods.
-  bool IsValid() OVERRIDE;
-  CefString GetURL() OVERRIDE;
-  CefString GetDisplayURL() OVERRIDE;
-  CefString GetOriginalURL() OVERRIDE;
-  CefString GetTitle() OVERRIDE;
-  TransitionType GetTransitionType() OVERRIDE;
-  bool HasPostData() OVERRIDE;
-  CefTime GetCompletionTime() OVERRIDE;
-  int GetHttpStatusCode() OVERRIDE;
+  bool IsValid() override;
+  CefString GetURL() override;
+  CefString GetDisplayURL() override;
+  CefString GetOriginalURL() override;
+  CefString GetTitle() override;
+  TransitionType GetTransitionType() override;
+  bool HasPostData() override;
+  CefTime GetCompletionTime() override;
+  int GetHttpStatusCode() override;
+  CefRefPtr<CefSSLStatus> GetSSLStatus() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_NAVIGATION_ENTRY_CTOCPP_H_

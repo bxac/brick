@@ -27,11 +27,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 #ifndef CEF_INCLUDE_INTERNAL_CEF_PTR_H_
 #define CEF_INCLUDE_INTERNAL_CEF_PTR_H_
 #pragma once
 
+#include <memory>
+
+#include "include/base/cef_build.h"
 #include "include/base/cef_ref_counted.h"
 
 ///
@@ -43,7 +45,7 @@
 // avoid common memory leaks caused by forgetting to Release an object
 // reference.  Sample usage:
 // <pre>
-//   class MyFoo : public CefBase {
+//   class MyFoo : public CefBaseRefCounted {
 //    ...
 //   };
 //
@@ -144,18 +146,23 @@
 // </p>
 ///
 template <class T>
-class CefRefPtr : public scoped_refptr<T> {
- public:
-  typedef scoped_refptr<T> parent;
+using CefRefPtr = scoped_refptr<T>;
 
-  CefRefPtr() : parent() {}
+///
+// A CefOwnPtr<T> is like a T*, except that the destructor of CefOwnPtr<T>
+// automatically deletes the pointer it holds (if any). That is, CefOwnPtr<T>
+// owns the T object that it points to. Like a T*, a CefOwnPtr<T> may hold
+// either NULL or a pointer to a T object. Also like T*, CefOwnPtr<T> is
+// thread-compatible, and once you dereference it, you get the thread safety
+// guarantees of T.
+///
+template <class T, class D = std::default_delete<T>>
+using CefOwnPtr = std::unique_ptr<T, D>;
 
-  CefRefPtr(T* p) : parent(p) {}
-
-  CefRefPtr(const scoped_refptr<T>& r) : parent(r) {}
-
-  template <typename U>
-  CefRefPtr(const scoped_refptr<U>& r) : parent(r) {}
-};
+///
+// A CefRawPtr<T> is the same as T*
+///
+template <class T>
+using CefRawPtr = T*;
 
 #endif  // CEF_INCLUDE_INTERNAL_CEF_PTR_H_

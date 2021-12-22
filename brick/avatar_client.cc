@@ -72,10 +72,10 @@ AvatarClient::CreateRequest(
   CEF_REQUIRE_UI_THREAD();
 
   if (platform_util::IsPathExists(path + kTmpSuffix))
-    return NULL;  // Probably we already started downloading for current avatar
+    return nullptr;  // Probably we already started downloading for current avatar
 
   if (!platform_util::MakeDirectory(helper::BaseDir(path)))
-    return NULL;
+    return nullptr;
 
   CefRefPtr<CefRequest> request = CefRequest::Create();
   request->SetURL(url);
@@ -83,5 +83,5 @@ AvatarClient::CreateRequest(
   request->SetFlags(UR_FLAG_NO_RETRY_ON_5XX);
 
   // Create and start the new CefURLRequest.
-  return CefURLRequest::Create(request, new AvatarClient(callback, path), NULL);
+  return CefURLRequest::Create(request, new AvatarClient(callback, path), nullptr);
 }

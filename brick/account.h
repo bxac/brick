@@ -11,7 +11,7 @@
 #include "include/base/cef_callback.h"
 #include "brick/request_util.h"
 
-class Account : public CefBase {
+class Account : public CefBaseRefCounted {
 
  public:
   enum ERROR_CODE {
@@ -34,7 +34,7 @@ class Account : public CefBase {
     request_util::CookiesMap cookies;
   } AuthResult;
 
-  typedef base::Callback<void(const CefRefPtr<Account>, AuthResult)> AuthCallback;
+  typedef base::RepeatingCallback<void(const CefRefPtr<Account>, AuthResult)> AuthCallback;
 
   Account();
   ~Account();

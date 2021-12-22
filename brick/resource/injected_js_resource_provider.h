@@ -8,6 +8,8 @@
 #include "include/wrapper/cef_resource_manager.h"
 #include "brick/common/app_settings.h"
 
+#define OVERRIDE override
+
 class InjectedJsResourceProvider : public CefResourceManager::Provider {
  public:
   InjectedJsResourceProvider(const std::string& url_path, AppSettings::client_scripts_map* scripts);

@@ -10,6 +10,8 @@
 #include "brick/window/edit_account_window.h"
 #include "brick/account_manager.h"
 
+#define OVERRIDE override
+
 class AccountsWindow : public BaseWindow {
 
  public:

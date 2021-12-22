@@ -38,6 +38,7 @@ class ClientHandler : public CefClient,
                       public CefDialogHandler,
                       public CefContextMenuHandler,
                       public CefRequestHandler,
+                      public CefResourceRequestHandler,
                       public EventHandler<UserAwayEvent>,
                       public EventHandler<SleepEvent>,
                       public EventHandler<DownloadStartEvent>,
@@ -51,7 +52,7 @@ class ClientHandler : public CefClient,
 
   // Interface for process message delegates. Do not perform work in the
   // RenderDelegate constructor.
-  class ProcessMessageDelegate : public virtual CefBase {
+  class ProcessMessageDelegate : public virtual CefBaseRefCounted {
    public:
     explicit ProcessMessageDelegate(const char* message_namespace)
        : message_namespace_(message_namespace) {}
@@ -171,13 +172,14 @@ class ClientHandler : public CefClient,
       CefWindowInfo& windowInfo,
       CefRefPtr<CefClient>& client,
       CefBrowserSettings& settings,
+      CefRefPtr<CefDictionaryValue>& extra_info,
       bool* no_javascript_access) OVERRIDE;
 
-  virtual void OnWindowCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-
+  //virtual void OnWindowCreated(CefRefPtr<CefWindow> window) OVERRIDE;
+  
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
-  virtual bool OnCloseBrowser(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  //virtual bool OnCloseBrowser(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
@@ -195,12 +197,15 @@ class ClientHandler : public CefClient,
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
      CefRefPtr<CefFrame> frame,
      CefRefPtr<CefRequest> request,
+     bool user_gesture,
      bool is_redirect) OVERRIDE;
-  cef_return_value_t OnBeforeResourceLoad(
+
+  virtual CefResourceRequestHandler::ReturnValue OnBeforeResourceLoad(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
       CefRefPtr<CefRequest> request,
-      CefRefPtr<CefRequestCallback> callback) OVERRIDE;
+      CefRefPtr<CefCallback> callback) OVERRIDE;
+
   virtual CefRefPtr<CefResourceHandler> GetResourceHandler(
      CefRefPtr<CefBrowser> browser,
      CefRefPtr<CefFrame> frame,
@@ -238,6 +243,7 @@ class ClientHandler : public CefClient,
   void CloseDevTools(CefRefPtr<CefBrowser> browser);
 
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+     CefRefPtr<CefFrame> frame,
      CefProcessId source_process,
      CefRefPtr<CefProcessMessage> message)
      OVERRIDE;

@@ -213,7 +213,7 @@ namespace desktop_media {
   }
 
   bool
-  EnumerateWindows(CefListValue* list) {
+  EnumerateWindows(CefRefPtr<CefListValue> list) {
     int last_index = list->GetSize();
     int num_screens = XScreenCount(cef_get_xdisplay());
     // TODO(buglloc): R&D, should i look at _NET_CLIENT_LIST?
@@ -256,7 +256,7 @@ namespace desktop_media {
   }
 
   bool
-  EnumerateScreens(CefListValue* list) {
+  EnumerateScreens(CefRefPtr<CefListValue> list) {
     // TODO(buglloc): implement when WebRTC starts support screen enumeration
     CefRefPtr<CefListValue> media = CefListValue::Create();
     std::string id = kScreenTypeName;

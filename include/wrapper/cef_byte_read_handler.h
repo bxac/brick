@@ -55,20 +55,20 @@ class CefByteReadHandler : public CefReadHandler {
   ///
   CefByteReadHandler(const unsigned char* bytes,
                      size_t size,
-                     CefRefPtr<CefBase> source);
+                     CefRefPtr<CefBaseRefCounted> source);
 
   // CefReadHandler methods.
-  virtual size_t Read(void* ptr, size_t size, size_t n) OVERRIDE;
-  virtual int Seek(int64 offset, int whence) OVERRIDE;
-  virtual int64 Tell() OVERRIDE;
-  virtual int Eof() OVERRIDE;
-  virtual bool MayBlock() OVERRIDE { return false; }
+  virtual size_t Read(void* ptr, size_t size, size_t n) override;
+  virtual int Seek(int64 offset, int whence) override;
+  virtual int64 Tell() override;
+  virtual int Eof() override;
+  virtual bool MayBlock() override { return false; }
 
  private:
   const unsigned char* bytes_;
   int64 size_;
   int64 offset_;
-  CefRefPtr<CefBase> source_;
+  CefRefPtr<CefBaseRefCounted> source_;
 
   base::Lock lock_;
 

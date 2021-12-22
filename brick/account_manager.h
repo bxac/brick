@@ -11,7 +11,7 @@
 #include "brick/event/event_sender.h"
 #include "brick/account.h"
 
-class AccountManager : public CefBase {
+class AccountManager : public CefBaseRefCounted {
  public:
   typedef std::map<int, CefRefPtr<Account>> accounts_map;
 

@@ -136,7 +136,7 @@ namespace {
           renew
       );
 
-      self->window_objects_.auth_account->Auth(renew, base::Bind(&EditAccountWindow::OnAuthComplete, self), otp);
+      self->window_objects_.auth_account->Auth(renew, base::BindRepeating(&EditAccountWindow::OnAuthComplete, self), otp);
     }
   }
 
@@ -180,7 +180,7 @@ EditAccountWindow::Init(CefRefPtr<Account> account, bool switch_on_save) {
   window_objects_.save_button = GTK_BUTTON(gtk_builder_get_object(builder, "save_button"));
   window_objects_.cancel_button = GTK_BUTTON(gtk_builder_get_object(builder, "cancel_button"));
 
-  g_signal_connect(GTK_OBJECT(window_objects_.window), "destroy", G_CALLBACK(OnDestroy), this);
+  g_signal_connect(/*GTK_OBJECT(*/window_objects_.window/*)*/, "destroy", G_CALLBACK(OnDestroy), this);
   g_signal_connect(window_objects_.save_button, "clicked", G_CALLBACK(OnSave), this);
   g_signal_connect(window_objects_.cancel_button, "clicked", G_CALLBACK(OnCancel), this);
 
@@ -261,7 +261,7 @@ EditAccountWindow::CancelAuthPending() {
     return;
 
   window_objects_.auth_account->CancelAuthPending(false);
-  window_objects_.auth_account = NULL;
+  window_objects_.auth_account = nullptr;
 }
 
 void

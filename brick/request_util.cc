@@ -30,6 +30,7 @@ namespace request_util {
     }
     return result;
   }
+#define UU_URL_SPECIAL_CHARS UU_URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS | UU_PATH_SEPARATORS
 
   void
   ParseCookie(const std::string& header, CookiesMap& destination) {

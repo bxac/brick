@@ -171,7 +171,7 @@ Account::Auth(bool renew_password, const AuthCallback& callback, const std::stri
 
   callback_ = callback;
   urlrequest_ = AuthClient::CreateRequest(
-      base::Bind(&Account::OnAuthComplete, this),
+      base::BindRepeating(&Account::OnAuthComplete, this),
       this,
       otp,
       renew_password);
@@ -179,7 +179,7 @@ Account::Auth(bool renew_password, const AuthCallback& callback, const std::stri
   // Cancel auth request after timeout
   CefPostDelayedTask(
       TID_UI,
-      base::Bind(&Account::OnAuthTimedOut, this, urlrequest_.get()),
+      base::BindRepeating(&Account::OnAuthTimedOut, this, urlrequest_.get()),
       kAuthTimeout * 1000);
 }
 
@@ -193,7 +193,7 @@ Account::OnAuthComplete(const AuthResult auth_result, const std::string& new_pas
 
   callback_.Run(this, auth_result);
   callback_.Reset();
-  urlrequest_ = NULL;
+  urlrequest_ = nullptr;
 }
 
 void
@@ -207,7 +207,7 @@ Account::CancelAuthPending(bool call_callback) {
   static_cast<AuthClient*>(urlrequest_->GetClient().get())->Detach();
 
   urlrequest_->Cancel();
-  urlrequest_ = NULL;
+  urlrequest_ = nullptr;
 
   LOG(WARNING) << "Auth failed (canceled)";
 
@@ -236,7 +236,7 @@ Account::OnAuthTimedOut(const CefURLRequest *urlrequest) {
   static_cast<AuthClient*>(urlrequest_->GetClient().get())->Detach();
 
   urlrequest_->Cancel();
-  urlrequest_ = NULL;
+  urlrequest_ = nullptr;
 
   LOG(WARNING) << "Auth failed (timeout of " << kAuthTimeout << "s reached)";
 

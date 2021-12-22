@@ -52,7 +52,7 @@ V8Handler::Execute(
     }
 
     std::vector<CefString> suggestions;
-    bool isCorrect = browser->SpellCheckWord(arguments[1]->GetStringValue(), suggestions);
+    bool isCorrect = true; //browser->SpellCheckWord(arguments[1]->GetStringValue(), suggestions);
 
     CefRefPtr<CefV8Value> v8_suggestions = CefV8Value::CreateArray(suggestions.size());
     for (uint i = 0; i < suggestions.size(); ++i) {
@@ -63,7 +63,7 @@ V8Handler::Execute(
     CefV8ValueList args;
     args.push_back(CefV8Value::CreateBool(isCorrect));
     args.push_back(v8_suggestions);
-    callbackFunction->ExecuteFunction(NULL, args);
+    callbackFunction->ExecuteFunction(nullptr, args);
     return true;
   }
 
@@ -79,7 +79,7 @@ V8Handler::Execute(
   // Pass the rest of the arguments
   for (unsigned int i = 1; i < arguments.size(); i++)
     helper::SetListValue(message_args, i, arguments[i]);
-  browser->SendProcessMessage(PID_BROWSER, message);
+  browser->GetMainFrame()->SendProcessMessage(PID_BROWSER, message);
 
   messageId++;
   return true;

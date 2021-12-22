@@ -18,7 +18,7 @@
 #include "include/internal/cef_types_wrappers.h"
 #include "brick/common/app_settings.h"
 
-class BrickApp : public CefBase {
+class BrickApp : public CefBaseRefCounted {
 
  public:
   static CefBrowserSettings GetBrowserSettings(std::string work_dir, AppSettings app_settings);

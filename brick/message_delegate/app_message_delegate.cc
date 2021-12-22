@@ -107,7 +107,7 @@ AppMessageDelegate::OnProcessMessageReceived(
       CefRefPtr<Account> account = ClientHandler::GetInstance()->GetAccountManager()->GetCurrentAccount();
       account->Auth(
           false,
-          base::Bind(&AppMessageDelegate::OnAfterLogin, this, browser, response)
+          base::BindRepeating(&AppMessageDelegate::OnAfterLogin, this, browser, response)
       );
       invoke_callback = false;
     }
@@ -597,7 +597,7 @@ AppMessageDelegate::OnProcessMessageReceived(
     response_args->SetInt(1, error);
 
     // Send response
-    browser->SendProcessMessage(PID_RENDERER, response);
+    browser->GetMainFrame()->SendProcessMessage(PID_RENDERER, response);
   }
 
   return true;
@@ -620,7 +620,7 @@ AppMessageDelegate::OnAfterLogin(
   CefRefPtr<CefListValue> response_args = response->GetArgumentList();
 
   if (auth_result.success) {
-    SetCookies(CefCookieManager::GetGlobalManager(NULL), account->GetOrigin(), auth_result.cookies, account->IsSecure());
+    SetCookies(CefCookieManager::GetGlobalManager(nullptr), account->GetOrigin(), auth_result.cookies, account->IsSecure());
     // TODO(buglloc): Replace huge argument lists to dictionary!
     response_args->SetBool(2, true);
     response_args->SetNull(3);
@@ -639,7 +639,7 @@ AppMessageDelegate::OnAfterLogin(
   response_args->SetInt(1, NO_ERROR);
 
   // Send response
-  browser->SendProcessMessage(PID_RENDERER, response);
+  browser->GetMainFrame()->SendProcessMessage(PID_RENDERER, response);
 }
 
 void
@@ -651,7 +651,7 @@ AppMessageDelegate::SetCookies(
 
   if (!CefCurrentlyOn(TID_IO)) {
     // Execute on the IO thread.
-    CefPostTask(TID_IO, base::Bind(&AppMessageDelegate::SetCookies, this, manager, url, cookies, is_secure));
+    CefPostTask(TID_IO, base::BindOnce(&AppMessageDelegate::SetCookies, this, manager, url, cookies, is_secure));
     return;
   }
 
@@ -661,6 +661,6 @@ AppMessageDelegate::SetCookies(
     CefString(&cookie.value) = item.second;
     cookie.secure = is_secure;
     cookie.httponly = true;
-    manager->SetCookie(url, cookie, NULL);
+    manager->SetCookie(url, cookie, nullptr);
   }
 }

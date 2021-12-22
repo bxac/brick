@@ -7,9 +7,10 @@ WindowFeatures::WindowFeatures(const CefPopupFeatures& popupFeatures) {
   this->height = popupFeatures.height;
   this->x = popupFeatures.x;
   this->y = popupFeatures.y;
-  this->dialog = popupFeatures.dialog > 0;
+  //this->dialog = popupFeatures.dialog > 0;
   this->topmost = false;
 
+/*
   if (popupFeatures.additionalFeatures) {
     CefString feature;
     int size = cef_string_list_size(popupFeatures.additionalFeatures);
@@ -20,4 +21,5 @@ WindowFeatures::WindowFeatures(const CefPopupFeatures& popupFeatures) {
       }
     }
   }
+  */
 }

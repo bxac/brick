@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,34 +9,37 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=590ed9ad60ffd03c62591b1dcae2d1c4d7603846$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_PROCESS_MESSAGE_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_PROCESS_MESSAGE_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_process_message.h"
 #include "include/capi/cef_process_message_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_process_message.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefProcessMessageCToCpp
-    : public CefCToCpp<CefProcessMessageCToCpp, CefProcessMessage,
-        cef_process_message_t> {
+    : public CefCToCppRefCounted<CefProcessMessageCToCpp,
+                                 CefProcessMessage,
+                                 cef_process_message_t> {
  public:
   CefProcessMessageCToCpp();
+  virtual ~CefProcessMessageCToCpp();
 
   // CefProcessMessage methods.
-  bool IsValid() OVERRIDE;
-  bool IsReadOnly() OVERRIDE;
-  CefRefPtr<CefProcessMessage> Copy() OVERRIDE;
-  CefString GetName() OVERRIDE;
-  CefRefPtr<CefListValue> GetArgumentList() OVERRIDE;
+  bool IsValid() override;
+  bool IsReadOnly() override;
+  CefRefPtr<CefProcessMessage> Copy() override;
+  CefString GetName() override;
+  CefRefPtr<CefListValue> GetArgumentList() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_PROCESS_MESSAGE_CTOCPP_H_

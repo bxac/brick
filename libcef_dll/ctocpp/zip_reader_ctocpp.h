@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,40 +9,43 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=ec35ddcbceb5b6dd205c0e464b11c55d87b36eae$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_ZIP_READER_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_ZIP_READER_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_zip_reader.h"
 #include "include/capi/cef_zip_reader_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_zip_reader.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
-class CefZipReaderCToCpp
-    : public CefCToCpp<CefZipReaderCToCpp, CefZipReader, cef_zip_reader_t> {
+class CefZipReaderCToCpp : public CefCToCppRefCounted<CefZipReaderCToCpp,
+                                                      CefZipReader,
+                                                      cef_zip_reader_t> {
  public:
   CefZipReaderCToCpp();
+  virtual ~CefZipReaderCToCpp();
 
   // CefZipReader methods.
-  bool MoveToFirstFile() OVERRIDE;
-  bool MoveToNextFile() OVERRIDE;
-  bool MoveToFile(const CefString& fileName, bool caseSensitive) OVERRIDE;
-  bool Close() OVERRIDE;
-  CefString GetFileName() OVERRIDE;
-  int64 GetFileSize() OVERRIDE;
-  CefTime GetFileLastModified() OVERRIDE;
-  bool OpenFile(const CefString& password) OVERRIDE;
-  bool CloseFile() OVERRIDE;
-  int ReadFile(void* buffer, size_t bufferSize) OVERRIDE;
-  int64 Tell() OVERRIDE;
-  bool Eof() OVERRIDE;
+  bool MoveToFirstFile() override;
+  bool MoveToNextFile() override;
+  bool MoveToFile(const CefString& fileName, bool caseSensitive) override;
+  bool Close() override;
+  CefString GetFileName() override;
+  int64 GetFileSize() override;
+  CefTime GetFileLastModified() override;
+  bool OpenFile(const CefString& password) override;
+  bool CloseFile() override;
+  int ReadFile(void* buffer, size_t bufferSize) override;
+  int64 Tell() override;
+  bool Eof() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_ZIP_READER_CTOCPP_H_

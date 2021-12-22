@@ -11,10 +11,12 @@
 #include "include/base/cef_callback.h"
 #include "include/cef_urlrequest.h"
 
+#define OVERRIDE override
+
 class AvatarClient : public CefURLRequestClient {
  public:
   // Callback to be executed on request completion.
-  typedef base::Callback<void(bool)> Callback;
+  typedef base::RepeatingCallback<void(bool)> Callback;
 
   AvatarClient(const Callback& callback, const std::string& path);
 

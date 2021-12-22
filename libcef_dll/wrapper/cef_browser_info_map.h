@@ -13,17 +13,15 @@
 
 // Default traits for CefBrowserInfoMap. Override to provide different object
 // destruction behavior.
-template<typename ObjectType>
+template <typename ObjectType>
 struct DefaultCefBrowserInfoMapTraits {
-  static void Destruct(ObjectType info) {
-    delete info;
-  }
+  static void Destruct(ObjectType info) { delete info; }
 };
 
 // Maps an arbitrary IdType to an arbitrary ObjectType on a per-browser basis.
 template <typename IdType,
           typename ObjectType,
-          typename Traits = DefaultCefBrowserInfoMapTraits<ObjectType> >
+          typename Traits = DefaultCefBrowserInfoMapTraits<ObjectType>>
 class CefBrowserInfoMap {
  public:
   // Implement this interface to visit and optionally delete objects in the map.
@@ -38,7 +36,7 @@ class CefBrowserInfoMap {
     virtual bool OnNextInfo(int browser_id,
                             InfoIdType info_id,
                             InfoObjectType info,
-                            bool* remove) =0;
+                            bool* remove) = 0;
 
    protected:
     virtual ~Visitor() {}
@@ -46,13 +44,11 @@ class CefBrowserInfoMap {
 
   CefBrowserInfoMap() {}
 
-  ~CefBrowserInfoMap() {
-    clear();
-  }
+  ~CefBrowserInfoMap() { clear(); }
 
   // Add an object associated with the specified ID values.
   void Add(int browser_id, IdType info_id, ObjectType info) {
-    InfoMap* info_map = NULL;
+    InfoMap* info_map = nullptr;
     typename BrowserInfoMap::const_iterator it_browser =
         browser_info_map_.find(browser_id);
     if (it_browser == browser_info_map_.end()) {
@@ -260,6 +256,5 @@ class CefBrowserInfoMap {
 
   DISALLOW_COPY_AND_ASSIGN(CefBrowserInfoMap);
 };
-
 
 #endif  // CEF_LIBCEF_DLL_WRAPPER_CEF_BROWSER_INFO_MAP_H_

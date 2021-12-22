@@ -33,7 +33,7 @@ namespace {
     const std::string mime_type = response->GetMimeType().ToString();
 
     if (mime_type.find(kPageType) == 0 || mime_type.find(kJsonType) == 0)
-      return response->GetHeader(kDispositionHeaderName).ToString().find("attachment") == 0;
+      return response->GetHeaderByName(kDispositionHeaderName).ToString().find("attachment") == 0;
 
     return true;
   }
@@ -185,7 +185,7 @@ DownloadClient::CreateRequest(
   CEF_REQUIRE_UI_THREAD();
 
   if (!platform_util::MakeDirectory(helper::BaseDir(path)))
-    return NULL;
+    return nullptr;
 
 // TODO(buglloc): What we must todo in this case?
 //  if (platform_util::IsPathExists(path + kTmpSuffix))
@@ -194,10 +194,10 @@ DownloadClient::CreateRequest(
   CefRefPtr<CefRequest> request = CefRequest::Create();
   request->SetURL(url);
   request->SetMethod("GET");
-  request->SetFlags(UR_FLAG_ALLOW_CACHED_CREDENTIALS|UR_FLAG_NO_RETRY_ON_5XX|UR_FLAG_SKIP_CACHE);
+  request->SetFlags(UR_FLAG_ALLOW_STORED_CREDENTIALS|UR_FLAG_NO_RETRY_ON_5XX|UR_FLAG_SKIP_CACHE);
 
   // Create and start the new CefURLRequest.
-  return CefURLRequest::Create(request, new DownloadClient(id, path, name), NULL);
+  return CefURLRequest::Create(request, new DownloadClient(id, path, name), nullptr);
 }
 
 

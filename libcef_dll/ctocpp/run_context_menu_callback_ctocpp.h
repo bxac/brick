@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,31 +9,34 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=996803cc8b9f473a948065f87f69088844aad291$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_RUN_CONTEXT_MENU_CALLBACK_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_RUN_CONTEXT_MENU_CALLBACK_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_context_menu_handler.h"
 #include "include/capi/cef_context_menu_handler_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_context_menu_handler.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefRunContextMenuCallbackCToCpp
-    : public CefCToCpp<CefRunContextMenuCallbackCToCpp,
-        CefRunContextMenuCallback, cef_run_context_menu_callback_t> {
+    : public CefCToCppRefCounted<CefRunContextMenuCallbackCToCpp,
+                                 CefRunContextMenuCallback,
+                                 cef_run_context_menu_callback_t> {
  public:
   CefRunContextMenuCallbackCToCpp();
+  virtual ~CefRunContextMenuCallbackCToCpp();
 
   // CefRunContextMenuCallback methods.
-  void Continue(int command_id, EventFlags event_flags) OVERRIDE;
-  void Cancel() OVERRIDE;
+  void Continue(int command_id, EventFlags event_flags) override;
+  void Cancel() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_RUN_CONTEXT_MENU_CALLBACK_CTOCPP_H_

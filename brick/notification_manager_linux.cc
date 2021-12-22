@@ -250,12 +250,12 @@ NotificationManager::UpdateIcon(int id, std::string icon_path, bool success) {
 void
 NotificationManager::AsyncDownloadIcon(int id, const std::string& url, const std::string& path) {
   if (!CefCurrentlyOn(TID_UI)) {
-    CefPostTask(TID_UI, base::Bind(&NotificationManager::AsyncDownloadIcon, this, id, url, path));
+    CefPostTask(TID_UI, base::BindOnce(&NotificationManager::AsyncDownloadIcon, this, id, url, path));
     return;
   }
 
   AvatarClient::CreateRequest(
-      base::Bind(&NotificationManager::UpdateIcon, this, id, path),
+      base::BindRepeating(&NotificationManager::UpdateIcon, this, id, path),
       url,
       path
   );

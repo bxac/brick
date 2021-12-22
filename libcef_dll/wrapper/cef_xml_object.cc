@@ -15,8 +15,7 @@ namespace {
 class CefXmlObjectLoader {
  public:
   explicit CefXmlObjectLoader(CefRefPtr<CefXmlObject> root_object)
-    : root_object_(root_object) {
-  }
+      : root_object_(root_object) {}
 
   bool Load(CefRefPtr<CefStreamReader> stream,
             CefXmlReader::EncodingType encodingType,
@@ -59,8 +58,8 @@ class CefXmlObjectLoader {
             } else {
               // Value following a child element is not allowed.
               std::stringstream ss;
-              ss << "Value following child element, line " <<
-                  reader->GetLineNumber();
+              ss << "Value following child element, line "
+                 << reader->GetLineNumber();
               load_error_ = ss.str();
               ret = false;
               break;
@@ -82,7 +81,7 @@ class CefXmlObjectLoader {
               // Read all object attributes.
               do {
                 new_object->SetAttributeValue(reader->GetQualifiedName(),
-                    reader->GetValue());
+                                              reader->GetValue());
               } while (reader->MoveToNextAttribute());
               reader->MoveToCarryingElement();
             }
@@ -107,9 +106,9 @@ class CefXmlObjectLoader {
             // never occur (the parser catches this error).
             NOTREACHED();
             std::stringstream ss;
-            ss << "Mismatched end tag for " <<
-                std::string(cur_object->GetName()) <<
-                ", line " << reader->GetLineNumber();
+            ss << "Mismatched end tag for "
+               << std::string(cur_object->GetName()) << ", line "
+               << reader->GetLineNumber();
             load_error_ = ss.str();
             ret = false;
             break;
@@ -129,8 +128,8 @@ class CefXmlObjectLoader {
           } else {
             // Value following a child element is not allowed.
             std::stringstream ss;
-            ss << "Value following child element, line " <<
-                reader->GetLineNumber();
+            ss << "Value following child element, line "
+               << reader->GetLineNumber();
             load_error_ = ss.str();
             ret = false;
             break;
@@ -159,15 +158,14 @@ class CefXmlObjectLoader {
 }  // namespace
 
 CefXmlObject::CefXmlObject(const CefString& name)
-  : name_(name), parent_(NULL) {
-}
+    : name_(name), parent_(nullptr) {}
 
-CefXmlObject::~CefXmlObject() {
-}
+CefXmlObject::~CefXmlObject() {}
 
 bool CefXmlObject::Load(CefRefPtr<CefStreamReader> stream,
                         CefXmlReader::EncodingType encodingType,
-                        const CefString& URI, CefString* loadError) {
+                        const CefString& URI,
+                        CefString* loadError) {
   Clear();
 
   CefXmlObjectLoader loader(this);
@@ -247,7 +245,7 @@ bool CefXmlObject::SetName(const CefString& name) {
 
 bool CefXmlObject::HasParent() {
   base::AutoLock lock_scope(lock_);
-  return (parent_ != NULL);
+  return (parent_ != nullptr);
 }
 
 CefRefPtr<CefXmlObject> CefXmlObject::GetParent() {
@@ -387,7 +385,7 @@ bool CefXmlObject::RemoveChild(CefRefPtr<CefXmlObject> child) {
   for (; it != children_.end(); ++it) {
     if ((*it).get() == child.get()) {
       children_.erase(it);
-      child->SetParent(NULL);
+      child->SetParent(nullptr);
       return true;
     }
   }
@@ -404,14 +402,14 @@ void CefXmlObject::ClearChildren() {
   base::AutoLock lock_scope(lock_);
   ObjectVector::iterator it = children_.begin();
   for (; it != children_.end(); ++it)
-    (*it)->SetParent(NULL);
+    (*it)->SetParent(nullptr);
   children_.clear();
 }
 
 CefRefPtr<CefXmlObject> CefXmlObject::FindChild(const CefString& name) {
   DCHECK(!name.empty());
   if (name.empty())
-    return NULL;
+    return nullptr;
 
   base::AutoLock lock_scope(lock_);
   ObjectVector::const_iterator it = children_.begin();
@@ -419,7 +417,7 @@ CefRefPtr<CefXmlObject> CefXmlObject::FindChild(const CefString& name) {
     if ((*it)->GetName() == name)
       return (*it);
   }
-  return NULL;
+  return nullptr;
 }
 
 size_t CefXmlObject::FindChildren(const CefString& name,
@@ -444,10 +442,10 @@ size_t CefXmlObject::FindChildren(const CefString& name,
 void CefXmlObject::SetParent(CefXmlObject* parent) {
   base::AutoLock lock_scope(lock_);
   if (parent) {
-    DCHECK(parent_ == NULL);
+    DCHECK(parent_ == nullptr);
     parent_ = parent;
   } else {
-    DCHECK(parent_ != NULL);
-    parent_ = NULL;
+    DCHECK(parent_ != nullptr);
+    parent_ = nullptr;
   }
 }

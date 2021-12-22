@@ -280,5 +280,5 @@ AuthClient::CreateRequest(
   request->SetFlags(UR_FLAG_SKIP_CACHE|UR_FLAG_NO_RETRY_ON_5XX|UR_FLAG_STOP_ON_REDIRECT);
 
   // Create and start the new CefURLRequest.
-  return CefURLRequest::Create(request, new AuthClient(callback, url), NULL);
+  return CefURLRequest::Create(request, new AuthClient(callback, url), nullptr);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,37 +9,39 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=6287d21581cc9cf0593134eaa1de4dd97628f495$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_V8STACK_FRAME_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_V8STACK_FRAME_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_v8.h"
 #include "include/capi/cef_v8_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_v8.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
-class CefV8StackFrameCToCpp
-    : public CefCToCpp<CefV8StackFrameCToCpp, CefV8StackFrame,
-        cef_v8stack_frame_t> {
+class CefV8StackFrameCToCpp : public CefCToCppRefCounted<CefV8StackFrameCToCpp,
+                                                         CefV8StackFrame,
+                                                         cef_v8stack_frame_t> {
  public:
   CefV8StackFrameCToCpp();
+  virtual ~CefV8StackFrameCToCpp();
 
   // CefV8StackFrame methods.
-  bool IsValid() OVERRIDE;
-  CefString GetScriptName() OVERRIDE;
-  CefString GetScriptNameOrSourceURL() OVERRIDE;
-  CefString GetFunctionName() OVERRIDE;
-  int GetLineNumber() OVERRIDE;
-  int GetColumn() OVERRIDE;
-  bool IsEval() OVERRIDE;
-  bool IsConstructor() OVERRIDE;
+  bool IsValid() override;
+  CefString GetScriptName() override;
+  CefString GetScriptNameOrSourceURL() override;
+  CefString GetFunctionName() override;
+  int GetLineNumber() override;
+  int GetColumn() override;
+  bool IsEval() override;
+  bool IsConstructor() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_V8STACK_FRAME_CTOCPP_H_

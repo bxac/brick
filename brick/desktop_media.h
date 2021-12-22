@@ -16,8 +16,8 @@
 #include "include/cef_values.h"
 
 namespace desktop_media {
-  bool EnumerateWindows(CefListValue* list);
-  bool EnumerateScreens(CefListValue* list);
+  bool EnumerateWindows(CefRefPtr<CefListValue> list);
+  bool EnumerateScreens(CefRefPtr<CefListValue> list);
   bool GetMediaPreview(std::string type, int32 id, std::vector<unsigned char>* out);
 
 }  // namespace desktop_media

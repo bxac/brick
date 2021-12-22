@@ -6,6 +6,8 @@
 
 #include "include/wrapper/cef_resource_manager.h"
 
+#define OVERRIDE override
+
 class LastResourceProvider : public CefResourceManager::Provider {
  public:
   LastResourceProvider() {}

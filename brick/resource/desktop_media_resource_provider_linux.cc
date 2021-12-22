@@ -40,7 +40,7 @@ DesktopMediaResourceProvider::OnRequest(scoped_refptr<CefResourceManager::Reques
   int64 id = atoi(url.substr(delimiter + 1).c_str());
 
   CefPostTask(TID_UI,
-              base::Bind(&DesktopMediaResourceProvider::GetPreviewOnUIThread, type, id, request));
+              base::BindOnce(&DesktopMediaResourceProvider::GetPreviewOnUIThread, type, id, request));
   return true;
 }
 
@@ -54,11 +54,11 @@ DesktopMediaResourceProvider::GetPreviewOnUIThread(
   std::vector<unsigned char> preview;
   if (desktop_media::GetMediaPreview(media_type, media_id, &preview)) {
     CefPostTask(TID_IO,
-                base::Bind(&DesktopMediaResourceProvider::SendPreviewOnIOThread, preview, request));
+                base::BindOnce(&DesktopMediaResourceProvider::SendPreviewOnIOThread, preview, request));
     preview.clear();
   }
   CefPostTask(TID_IO,
-              base::Bind(&DesktopMediaResourceProvider::SendErrorOnIOThread, request));
+              base::BindOnce(&DesktopMediaResourceProvider::SendErrorOnIOThread, request));
 }
 
 void

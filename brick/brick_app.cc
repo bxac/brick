@@ -25,7 +25,7 @@ BrickApp::GetCefSettings(std::string work_dir, AppSettings app_settings) {
     << " Chrome/" << cef_version_info(2) << "." << cef_version_info(3)
     << "." << cef_version_info(4) << "." << cef_version_info(5);
 
-  CefString(&settings.product_version) = product_version.str();
+  CefString(&settings.user_agent_product) = product_version.str();
 
   if (!app_settings.cache_path.empty()) {
     CefString(&settings.cache_path) = app_settings.cache_path;
@@ -45,7 +45,7 @@ BrickApp::GetCefSettings(std::string work_dir, AppSettings app_settings) {
   CefString(&settings.accept_language_list) = GetAcceptLanguageList();
   CefString(&settings.resources_dir_path) = app_settings.resource_dir + "/cef";
   CefString(&settings.locales_dir_path) = app_settings.resource_dir + "/cef/locales";
-  settings.ignore_certificate_errors = app_settings.ignore_certificate_errors;
+  //settings.ignore_certificate_errors = app_settings.ignore_certificate_errors;
   settings.log_severity = app_settings.log_severity;
 
   // HACK: we have to set white background to avoid black flashes.

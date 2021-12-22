@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,19 +33,45 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
+// $hash=2e42334fc22050e207e5a0af6fe290a592e4105f$
+//
 
 #ifndef CEF_INCLUDE_CAPI_CEF_REQUEST_CONTEXT_CAPI_H_
 #define CEF_INCLUDE_CAPI_CEF_REQUEST_CONTEXT_CAPI_H_
 #pragma once
 
+#include "include/capi/cef_callback_capi.h"
 #include "include/capi/cef_cookie_capi.h"
-#include "include/capi/cef_request_context_handler_capi.h"
+#include "include/capi/cef_extension_capi.h"
+#include "include/capi/cef_extension_handler_capi.h"
+#include "include/capi/cef_media_router_capi.h"
+#include "include/capi/cef_values_capi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+struct _cef_request_context_handler_t;
 struct _cef_scheme_handler_factory_t;
+
+///
+// Callback structure for cef_request_context_t::ResolveHost.
+///
+typedef struct _cef_resolve_callback_t {
+  ///
+  // Base structure.
+  ///
+  cef_base_ref_counted_t base;
+
+  ///
+  // Called on the UI thread after the ResolveHost request has completed.
+  // |result| will be the result code. |resolved_ips| will be the list of
+  // resolved IP addresses or NULL if the resolution failed.
+  ///
+  void(CEF_CALLBACK* on_resolve_completed)(struct _cef_resolve_callback_t* self,
+                                           cef_errorcode_t result,
+                                           cef_string_list_t resolved_ips);
+} cef_resolve_callback_t;
 
 ///
 // A request context provides request handling for a set of related browser or
@@ -67,33 +93,33 @@ typedef struct _cef_request_context_t {
   ///
   // Base structure.
   ///
-  cef_base_t base;
+  cef_base_ref_counted_t base;
 
   ///
   // Returns true (1) if this object is pointing to the same context as |that|
   // object.
   ///
-  int (CEF_CALLBACK *is_same)(struct _cef_request_context_t* self,
-      struct _cef_request_context_t* other);
+  int(CEF_CALLBACK* is_same)(struct _cef_request_context_t* self,
+                             struct _cef_request_context_t* other);
 
   ///
   // Returns true (1) if this object is sharing the same storage as |that|
   // object.
   ///
-  int (CEF_CALLBACK *is_sharing_with)(struct _cef_request_context_t* self,
-      struct _cef_request_context_t* other);
+  int(CEF_CALLBACK* is_sharing_with)(struct _cef_request_context_t* self,
+                                     struct _cef_request_context_t* other);
 
   ///
   // Returns true (1) if this object is the global context. The global context
   // is used by default when creating a browser or URL request with a NULL
   // context argument.
   ///
-  int (CEF_CALLBACK *is_global)(struct _cef_request_context_t* self);
+  int(CEF_CALLBACK* is_global)(struct _cef_request_context_t* self);
 
   ///
   // Returns the handler for this context if any.
   ///
-  struct _cef_request_context_handler_t* (CEF_CALLBACK *get_handler)(
+  struct _cef_request_context_handler_t*(CEF_CALLBACK* get_handler)(
       struct _cef_request_context_t* self);
 
   ///
@@ -101,18 +127,15 @@ typedef struct _cef_request_context_t {
   // memory cache is being used.
   ///
   // The resulting string must be freed by calling cef_string_userfree_free().
-  cef_string_userfree_t (CEF_CALLBACK *get_cache_path)(
+  cef_string_userfree_t(CEF_CALLBACK* get_cache_path)(
       struct _cef_request_context_t* self);
 
   ///
-  // Returns the default cookie manager for this object. This will be the global
-  // cookie manager if this object is the global request context. Otherwise,
-  // this will be the default cookie manager used when this request context does
-  // not receive a value via cef_request_tContextHandler::get_cookie_manager().
-  // If |callback| is non-NULL it will be executed asnychronously on the IO
-  // thread after the manager's storage has been initialized.
+  // Returns the cookie manager for this object. If |callback| is non-NULL it
+  // will be executed asnychronously on the UI thread after the manager's
+  // storage has been initialized.
   ///
-  struct _cef_cookie_manager_t* (CEF_CALLBACK *get_default_cookie_manager)(
+  struct _cef_cookie_manager_t*(CEF_CALLBACK* get_cookie_manager)(
       struct _cef_request_context_t* self,
       struct _cef_completion_callback_t* callback);
 
@@ -129,8 +152,9 @@ typedef struct _cef_request_context_t {
   // optional |domain_name|. Returns false (0) if an error occurs. This function
   // may be called on any thread in the browser process.
   ///
-  int (CEF_CALLBACK *register_scheme_handler_factory)(
-      struct _cef_request_context_t* self, const cef_string_t* scheme_name,
+  int(CEF_CALLBACK* register_scheme_handler_factory)(
+      struct _cef_request_context_t* self,
+      const cef_string_t* scheme_name,
       const cef_string_t* domain_name,
       struct _cef_scheme_handler_factory_t* factory);
 
@@ -138,20 +162,208 @@ typedef struct _cef_request_context_t {
   // Clear all registered scheme handler factories. Returns false (0) on error.
   // This function may be called on any thread in the browser process.
   ///
-  int (CEF_CALLBACK *clear_scheme_handler_factories)(
+  int(CEF_CALLBACK* clear_scheme_handler_factories)(
       struct _cef_request_context_t* self);
 
   ///
   // Tells all renderer processes associated with this context to throw away
   // their plugin list cache. If |reload_pages| is true (1) they will also
   // reload all pages with plugins.
-  // cef_request_tContextHandler::OnBeforePluginLoad may be called to rebuild
+  // cef_request_context_handler_t::OnBeforePluginLoad may be called to rebuild
   // the plugin list cache.
   ///
-  void (CEF_CALLBACK *purge_plugin_list_cache)(
-      struct _cef_request_context_t* self, int reload_pages);
-} cef_request_context_t;
+  void(CEF_CALLBACK* purge_plugin_list_cache)(
+      struct _cef_request_context_t* self,
+      int reload_pages);
 
+  ///
+  // Returns true (1) if a preference with the specified |name| exists. This
+  // function must be called on the browser process UI thread.
+  ///
+  int(CEF_CALLBACK* has_preference)(struct _cef_request_context_t* self,
+                                    const cef_string_t* name);
+
+  ///
+  // Returns the value for the preference with the specified |name|. Returns
+  // NULL if the preference does not exist. The returned object contains a copy
+  // of the underlying preference value and modifications to the returned object
+  // will not modify the underlying preference value. This function must be
+  // called on the browser process UI thread.
+  ///
+  struct _cef_value_t*(CEF_CALLBACK* get_preference)(
+      struct _cef_request_context_t* self,
+      const cef_string_t* name);
+
+  ///
+  // Returns all preferences as a dictionary. If |include_defaults| is true (1)
+  // then preferences currently at their default value will be included. The
+  // returned object contains a copy of the underlying preference values and
+  // modifications to the returned object will not modify the underlying
+  // preference values. This function must be called on the browser process UI
+  // thread.
+  ///
+  struct _cef_dictionary_value_t*(CEF_CALLBACK* get_all_preferences)(
+      struct _cef_request_context_t* self,
+      int include_defaults);
+
+  ///
+  // Returns true (1) if the preference with the specified |name| can be
+  // modified using SetPreference. As one example preferences set via the
+  // command-line usually cannot be modified. This function must be called on
+  // the browser process UI thread.
+  ///
+  int(CEF_CALLBACK* can_set_preference)(struct _cef_request_context_t* self,
+                                        const cef_string_t* name);
+
+  ///
+  // Set the |value| associated with preference |name|. Returns true (1) if the
+  // value is set successfully and false (0) otherwise. If |value| is NULL the
+  // preference will be restored to its default value. If setting the preference
+  // fails then |error| will be populated with a detailed description of the
+  // problem. This function must be called on the browser process UI thread.
+  ///
+  int(CEF_CALLBACK* set_preference)(struct _cef_request_context_t* self,
+                                    const cef_string_t* name,
+                                    struct _cef_value_t* value,
+                                    cef_string_t* error);
+
+  ///
+  // Clears all certificate exceptions that were added as part of handling
+  // cef_request_handler_t::on_certificate_error(). If you call this it is
+  // recommended that you also call close_all_connections() or you risk not
+  // being prompted again for server certificates if you reconnect quickly. If
+  // |callback| is non-NULL it will be executed on the UI thread after
+  // completion.
+  ///
+  void(CEF_CALLBACK* clear_certificate_exceptions)(
+      struct _cef_request_context_t* self,
+      struct _cef_completion_callback_t* callback);
+
+  ///
+  // Clears all HTTP authentication credentials that were added as part of
+  // handling GetAuthCredentials. If |callback| is non-NULL it will be executed
+  // on the UI thread after completion.
+  ///
+  void(CEF_CALLBACK* clear_http_auth_credentials)(
+      struct _cef_request_context_t* self,
+      struct _cef_completion_callback_t* callback);
+
+  ///
+  // Clears all active and idle connections that Chromium currently has. This is
+  // only recommended if you have released all other CEF objects but don't yet
+  // want to call cef_shutdown(). If |callback| is non-NULL it will be executed
+  // on the UI thread after completion.
+  ///
+  void(CEF_CALLBACK* close_all_connections)(
+      struct _cef_request_context_t* self,
+      struct _cef_completion_callback_t* callback);
+
+  ///
+  // Attempts to resolve |origin| to a list of associated IP addresses.
+  // |callback| will be executed on the UI thread after completion.
+  ///
+  void(CEF_CALLBACK* resolve_host)(struct _cef_request_context_t* self,
+                                   const cef_string_t* origin,
+                                   struct _cef_resolve_callback_t* callback);
+
+  ///
+  // Load an extension.
+  //
+  // If extension resources will be read from disk using the default load
+  // implementation then |root_directory| should be the absolute path to the
+  // extension resources directory and |manifest| should be NULL. If extension
+  // resources will be provided by the client (e.g. via cef_request_handler_t
+  // and/or cef_extension_handler_t) then |root_directory| should be a path
+  // component unique to the extension (if not absolute this will be internally
+  // prefixed with the PK_DIR_RESOURCES path) and |manifest| should contain the
+  // contents that would otherwise be read from the "manifest.json" file on
+  // disk.
+  //
+  // The loaded extension will be accessible in all contexts sharing the same
+  // storage (HasExtension returns true (1)). However, only the context on which
+  // this function was called is considered the loader (DidLoadExtension returns
+  // true (1)) and only the loader will receive cef_request_context_handler_t
+  // callbacks for the extension.
+  //
+  // cef_extension_handler_t::OnExtensionLoaded will be called on load success
+  // or cef_extension_handler_t::OnExtensionLoadFailed will be called on load
+  // failure.
+  //
+  // If the extension specifies a background script via the "background"
+  // manifest key then cef_extension_handler_t::OnBeforeBackgroundBrowser will
+  // be called to create the background browser. See that function for
+  // additional information about background scripts.
+  //
+  // For visible extension views the client application should evaluate the
+  // manifest to determine the correct extension URL to load and then pass that
+  // URL to the cef_browser_host_t::CreateBrowser* function after the extension
+  // has loaded. For example, the client can look for the "browser_action"
+  // manifest key as documented at
+  // https://developer.chrome.com/extensions/browserAction. Extension URLs take
+  // the form "chrome-extension://<extension_id>/<path>".
+  //
+  // Browsers that host extensions differ from normal browsers as follows:
+  //  - Can access chrome.* JavaScript APIs if allowed by the manifest. Visit
+  //    chrome://extensions-support for the list of extension APIs currently
+  //    supported by CEF.
+  //  - Main frame navigation to non-extension content is blocked.
+  //  - Pinch-zooming is disabled.
+  //  - CefBrowserHost::GetExtension returns the hosted extension.
+  //  - CefBrowserHost::IsBackgroundHost returns true for background hosts.
+  //
+  // See https://developer.chrome.com/extensions for extension implementation
+  // and usage documentation.
+  ///
+  void(CEF_CALLBACK* load_extension)(struct _cef_request_context_t* self,
+                                     const cef_string_t* root_directory,
+                                     struct _cef_dictionary_value_t* manifest,
+                                     struct _cef_extension_handler_t* handler);
+
+  ///
+  // Returns true (1) if this context was used to load the extension identified
+  // by |extension_id|. Other contexts sharing the same storage will also have
+  // access to the extension (see HasExtension). This function must be called on
+  // the browser process UI thread.
+  ///
+  int(CEF_CALLBACK* did_load_extension)(struct _cef_request_context_t* self,
+                                        const cef_string_t* extension_id);
+
+  ///
+  // Returns true (1) if this context has access to the extension identified by
+  // |extension_id|. This may not be the context that was used to load the
+  // extension (see DidLoadExtension). This function must be called on the
+  // browser process UI thread.
+  ///
+  int(CEF_CALLBACK* has_extension)(struct _cef_request_context_t* self,
+                                   const cef_string_t* extension_id);
+
+  ///
+  // Retrieve the list of all extensions that this context has access to (see
+  // HasExtension). |extension_ids| will be populated with the list of extension
+  // ID values. Returns true (1) on success. This function must be called on the
+  // browser process UI thread.
+  ///
+  int(CEF_CALLBACK* get_extensions)(struct _cef_request_context_t* self,
+                                    cef_string_list_t extension_ids);
+
+  ///
+  // Returns the extension matching |extension_id| or NULL if no matching
+  // extension is accessible in this context (see HasExtension). This function
+  // must be called on the browser process UI thread.
+  ///
+  struct _cef_extension_t*(CEF_CALLBACK* get_extension)(
+      struct _cef_request_context_t* self,
+      const cef_string_t* extension_id);
+
+  ///
+  // Returns the MediaRouter object associated with this context.  If |callback|
+  // is non-NULL it will be executed asnychronously on the UI thread after the
+  // manager's context has been initialized.
+  ///
+  struct _cef_media_router_t*(CEF_CALLBACK* get_media_router)(
+      struct _cef_request_context_t* self,
+      struct _cef_completion_callback_t* callback);
+} cef_request_context_t;
 
 ///
 // Returns the global context object.
@@ -170,10 +382,9 @@ CEF_EXPORT cef_request_context_t* cef_request_context_create_context(
 // Creates a new context object that shares storage with |other| and uses an
 // optional |handler|.
 ///
-CEF_EXPORT cef_request_context_t* create_context_shared(
+CEF_EXPORT cef_request_context_t* cef_create_context_shared(
     cef_request_context_t* other,
     struct _cef_request_context_handler_t* handler);
-
 
 #ifdef __cplusplus
 }

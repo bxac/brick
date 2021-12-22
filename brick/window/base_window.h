@@ -17,7 +17,7 @@
 #include "include/base/cef_lock.h"
 
 
-class BaseWindow : public CefBase {
+class BaseWindow : public CefBaseRefCounted {
 
  public:
   enum STATE {

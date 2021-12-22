@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,34 +9,38 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=7d81111a5bee29ff62a7778678e72085f9bd97d5$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_URLREQUEST_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_URLREQUEST_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_urlrequest.h"
 #include "include/capi/cef_urlrequest_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_urlrequest.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
-class CefURLRequestCToCpp
-    : public CefCToCpp<CefURLRequestCToCpp, CefURLRequest, cef_urlrequest_t> {
+class CefURLRequestCToCpp : public CefCToCppRefCounted<CefURLRequestCToCpp,
+                                                       CefURLRequest,
+                                                       cef_urlrequest_t> {
  public:
   CefURLRequestCToCpp();
+  virtual ~CefURLRequestCToCpp();
 
   // CefURLRequest methods.
-  CefRefPtr<CefRequest> GetRequest() OVERRIDE;
-  CefRefPtr<CefURLRequestClient> GetClient() OVERRIDE;
-  Status GetRequestStatus() OVERRIDE;
-  ErrorCode GetRequestError() OVERRIDE;
-  CefRefPtr<CefResponse> GetResponse() OVERRIDE;
-  void Cancel() OVERRIDE;
+  CefRefPtr<CefRequest> GetRequest() override;
+  CefRefPtr<CefURLRequestClient> GetClient() override;
+  Status GetRequestStatus() override;
+  ErrorCode GetRequestError() override;
+  CefRefPtr<CefResponse> GetResponse() override;
+  bool ResponseWasCached() override;
+  void Cancel() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_URLREQUEST_CTOCPP_H_

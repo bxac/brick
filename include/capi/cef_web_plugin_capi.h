@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,6 +33,8 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
+// $hash=f51ad9ffc67d94b9cbfad154e7f224111c2a96fa$
+//
 
 #ifndef CEF_INCLUDE_CAPI_CEF_WEB_PLUGIN_CAPI_H_
 #define CEF_INCLUDE_CAPI_CEF_WEB_PLUGIN_CAPI_H_
@@ -53,37 +55,36 @@ typedef struct _cef_web_plugin_info_t {
   ///
   // Base structure.
   ///
-  cef_base_t base;
+  cef_base_ref_counted_t base;
 
   ///
-  // Returns the plugin name (i.e. Flash).
+  // Returns the plugin name.
   ///
   // The resulting string must be freed by calling cef_string_userfree_free().
-  cef_string_userfree_t (CEF_CALLBACK *get_name)(
+  cef_string_userfree_t(CEF_CALLBACK* get_name)(
       struct _cef_web_plugin_info_t* self);
 
   ///
   // Returns the plugin file path (DLL/bundle/library).
   ///
   // The resulting string must be freed by calling cef_string_userfree_free().
-  cef_string_userfree_t (CEF_CALLBACK *get_path)(
+  cef_string_userfree_t(CEF_CALLBACK* get_path)(
       struct _cef_web_plugin_info_t* self);
 
   ///
   // Returns the version of the plugin (may be OS-specific).
   ///
   // The resulting string must be freed by calling cef_string_userfree_free().
-  cef_string_userfree_t (CEF_CALLBACK *get_version)(
+  cef_string_userfree_t(CEF_CALLBACK* get_version)(
       struct _cef_web_plugin_info_t* self);
 
   ///
   // Returns a description of the plugin from the version information.
   ///
   // The resulting string must be freed by calling cef_string_userfree_free().
-  cef_string_userfree_t (CEF_CALLBACK *get_description)(
+  cef_string_userfree_t(CEF_CALLBACK* get_description)(
       struct _cef_web_plugin_info_t* self);
 } cef_web_plugin_info_t;
-
 
 ///
 // Structure to implement for visiting web plugin information. The functions of
@@ -93,7 +94,7 @@ typedef struct _cef_web_plugin_info_visitor_t {
   ///
   // Base structure.
   ///
-  cef_base_t base;
+  cef_base_ref_counted_t base;
 
   ///
   // Method that will be called once for each plugin. |count| is the 0-based
@@ -101,10 +102,11 @@ typedef struct _cef_web_plugin_info_visitor_t {
   // Return false (0) to stop visiting plugins. This function may never be
   // called if no plugins are found.
   ///
-  int (CEF_CALLBACK *visit)(struct _cef_web_plugin_info_visitor_t* self,
-      struct _cef_web_plugin_info_t* info, int count, int total);
+  int(CEF_CALLBACK* visit)(struct _cef_web_plugin_info_visitor_t* self,
+                           struct _cef_web_plugin_info_t* info,
+                           int count,
+                           int total);
 } cef_web_plugin_info_visitor_t;
-
 
 ///
 // Structure to implement for receiving unstable plugin information. The
@@ -114,18 +116,18 @@ typedef struct _cef_web_plugin_unstable_callback_t {
   ///
   // Base structure.
   ///
-  cef_base_t base;
+  cef_base_ref_counted_t base;
 
   ///
   // Method that will be called for the requested plugin. |unstable| will be
   // true (1) if the plugin has reached the crash count threshold of 3 times in
   // 120 seconds.
   ///
-  void (CEF_CALLBACK *is_unstable)(
+  void(CEF_CALLBACK* is_unstable)(
       struct _cef_web_plugin_unstable_callback_t* self,
-      const cef_string_t* path, int unstable);
+      const cef_string_t* path,
+      int unstable);
 } cef_web_plugin_unstable_callback_t;
-
 
 ///
 // Visit web plugin information. Can be called on any thread in the browser
@@ -142,38 +144,11 @@ CEF_EXPORT void cef_visit_web_plugin_info(
 CEF_EXPORT void cef_refresh_web_plugins();
 
 ///
-// Add a plugin path (directory + file). This change may not take affect until
-// after cef_refresh_web_plugins() is called. Can be called on any thread in the
-// browser process.
-///
-CEF_EXPORT void cef_add_web_plugin_path(const cef_string_t* path);
-
-///
-// Add a plugin directory. This change may not take affect until after
-// cef_refresh_web_plugins() is called. Can be called on any thread in the
-// browser process.
-///
-CEF_EXPORT void cef_add_web_plugin_directory(const cef_string_t* dir);
-
-///
-// Remove a plugin path (directory + file). This change may not take affect
-// until after cef_refresh_web_plugins() is called. Can be called on any thread
-// in the browser process.
-///
-CEF_EXPORT void cef_remove_web_plugin_path(const cef_string_t* path);
-
-///
 // Unregister an internal plugin. This may be undone the next time
 // cef_refresh_web_plugins() is called. Can be called on any thread in the
 // browser process.
 ///
 CEF_EXPORT void cef_unregister_internal_web_plugin(const cef_string_t* path);
-
-///
-// Force a plugin to shutdown. Can be called on any thread in the browser
-// process but will be executed on the IO thread.
-///
-CEF_EXPORT void cef_force_web_plugin_shutdown(const cef_string_t* path);
 
 ///
 // Register a plugin crash. Can be called on any thread in the browser process
@@ -185,7 +160,8 @@ CEF_EXPORT void cef_register_web_plugin_crash(const cef_string_t* path);
 // Query if a plugin is unstable. Can be called on any thread in the browser
 // process.
 ///
-CEF_EXPORT void cef_is_web_plugin_unstable(const cef_string_t* path,
+CEF_EXPORT void cef_is_web_plugin_unstable(
+    const cef_string_t* path,
     cef_web_plugin_unstable_callback_t* callback);
 
 #ifdef __cplusplus

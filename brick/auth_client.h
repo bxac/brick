@@ -11,10 +11,12 @@
 #include "include/cef_urlrequest.h"
 #include "brick/account.h"
 
+#define OVERRIDE override
+
 class AuthClient : public CefURLRequestClient {
  public:
   // Callback to be executed on request completion.
-  typedef base::Callback<void(const Account::AuthResult, const std::string&)> Callback;
+  typedef base::RepeatingCallback<void(const Account::AuthResult, const std::string&)> Callback;
 
   AuthClient(const Callback& callback, const std::string& url);
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,31 +9,34 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=d1d4c09997abad1508d0815178a731f57c297320$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_PRINT_DIALOG_CALLBACK_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_PRINT_DIALOG_CALLBACK_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_print_handler.h"
 #include "include/capi/cef_print_handler_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_print_handler.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefPrintDialogCallbackCToCpp
-    : public CefCToCpp<CefPrintDialogCallbackCToCpp, CefPrintDialogCallback,
-        cef_print_dialog_callback_t> {
+    : public CefCToCppRefCounted<CefPrintDialogCallbackCToCpp,
+                                 CefPrintDialogCallback,
+                                 cef_print_dialog_callback_t> {
  public:
   CefPrintDialogCallbackCToCpp();
+  virtual ~CefPrintDialogCallbackCToCpp();
 
   // CefPrintDialogCallback methods.
-  void Continue(CefRefPtr<CefPrintSettings> settings) OVERRIDE;
-  void Cancel() OVERRIDE;
+  void Continue(CefRefPtr<CefPrintSettings> settings) override;
+  void Cancel() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_PRINT_DIALOG_CALLBACK_CTOCPP_H_

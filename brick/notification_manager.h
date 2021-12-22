@@ -10,7 +10,7 @@
 
 #include "include/cef_base.h"
 
-class NotificationManager : public CefBase {
+class NotificationManager : public CefBaseRefCounted {
  public:
   NotificationManager();
 

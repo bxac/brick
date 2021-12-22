@@ -26,7 +26,7 @@ ExternalAppWindowMessageDelegate::OnMessageReceived(CefRefPtr<CefProcessMessage>
 //  int32 callbackId = -1;
 //  int32 error = NO_ERROR;
 
-  BrowserWindow *window = ClientHandler::GetInstance()->GetMainWindowHandle();
+  CefRefPtr<BrowserWindow> window = ClientHandler::GetInstance()->GetMainWindowHandle();
 
   if (message_name == kMessageToggleVisibilityName) {
     window->ToggleVisibility();

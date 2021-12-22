@@ -6,6 +6,8 @@
 
 #include "brick/window/base_window.h"
 
+#define OVERRIDE override
+
 class AboutWindow : public BaseWindow {
 
  public:

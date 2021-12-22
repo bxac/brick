@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
 
   // If we have D-BUS - check single running with it (and call App::Present)
   // Otherwise - fallback to EnsureSingleInstance with flock
-  CefRefPtr<DBusProtocol> dbus = NULL;
+  CefRefPtr<DBusProtocol> dbus = nullptr;
   if (app_settings.external_api) {
     dbus = new DBusProtocol;
     if (dbus->Init() && !dbus->isSingleInstance()) {
@@ -324,15 +324,15 @@ int main(int argc, char* argv[]) {
   // Setup main window size & positions
   CefRect screen_rect = window_util::GetDefaultScreenRect();
   CefWindowInfo window_info;
-  window_info.width = static_cast<unsigned int>(kMainWindowWidth * window_util::GetDeviceScaleFactor());
-  window_info.height = static_cast<unsigned int>(kMainWindowHeight * window_util::GetDeviceScaleFactor());
-  window_info.x = screen_rect.x + (screen_rect.width - window_info.width) / 2;
-  window_info.y = screen_rect.y + (screen_rect.height - window_info.height) / 2;
+  window_info.bounds.width = static_cast<unsigned int>(kMainWindowWidth * window_util::GetDeviceScaleFactor());
+  window_info.bounds.height = static_cast<unsigned int>(kMainWindowHeight * window_util::GetDeviceScaleFactor());
+  window_info.bounds.x = screen_rect.x + (screen_rect.width - window_info.bounds.width) / 2;
+  window_info.bounds.y = screen_rect.y + (screen_rect.height - window_info.bounds.height) / 2;
 
   // Create browser
   CefBrowserHost::CreateBrowserSync(
      window_info, client_handler.get(),
-     startup_url, BrickApp::GetBrowserSettings(szWorkingDir, app_settings), NULL);
+     startup_url, BrickApp::GetBrowserSettings(szWorkingDir, app_settings), nullptr, nullptr);
 
   // Install a signal handler so we clean up after ourselves.
   signal(SIGINT, TerminationSignalHandler);

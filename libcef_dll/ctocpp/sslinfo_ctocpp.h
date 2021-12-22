@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,35 +9,32 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=390ce86c2295d2714c06379183d4d3ef458dba77$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_SSLINFO_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_SSLINFO_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_ssl_info.h"
 #include "include/capi/cef_ssl_info_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_ssl_info.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefSSLInfoCToCpp
-    : public CefCToCpp<CefSSLInfoCToCpp, CefSSLInfo, cef_sslinfo_t> {
+    : public CefCToCppRefCounted<CefSSLInfoCToCpp, CefSSLInfo, cef_sslinfo_t> {
  public:
   CefSSLInfoCToCpp();
+  virtual ~CefSSLInfoCToCpp();
 
   // CefSSLInfo methods.
-  CefRefPtr<CefSSLCertPrincipal> GetSubject() OVERRIDE;
-  CefRefPtr<CefSSLCertPrincipal> GetIssuer() OVERRIDE;
-  CefRefPtr<CefBinaryValue> GetSerialNumber() OVERRIDE;
-  CefTime GetValidStart() OVERRIDE;
-  CefTime GetValidExpiry() OVERRIDE;
-  CefRefPtr<CefBinaryValue> GetDEREncoded() OVERRIDE;
-  CefRefPtr<CefBinaryValue> GetPEMEncoded() OVERRIDE;
+  cef_cert_status_t GetCertStatus() override;
+  CefRefPtr<CefX509Certificate> GetX509Certificate() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_SSLINFO_CTOCPP_H_

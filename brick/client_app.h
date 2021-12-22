@@ -14,11 +14,13 @@
 #include "include/cef_app.h"
 #include "brick/brick_app.h"
 
+#define OVERRIDE override
+
 class ClientApp : public CefApp,
                   public CefBrowserProcessHandler,
                   public CefRenderProcessHandler {
  public:
-  class RenderDelegate : public virtual CefBase {
+  class RenderDelegate : public virtual CefBaseRefCounted {
    public:
     virtual void OnRenderThreadCreated(CefRefPtr<ClientApp> app,
        CefRefPtr<CefListValue> extra_info) {}
@@ -31,9 +33,11 @@ class ClientApp : public CefApp,
     virtual void OnBrowserDestroyed(CefRefPtr<ClientApp> app,
        CefRefPtr<CefBrowser> browser) {}
 
-    virtual CefRefPtr<CefLoadHandler> GetLoadHandler(CefRefPtr<ClientApp> app) {
-      return NULL;
-    }
+    //virtual CefRefPtr<CefLoadHandler> GetLoadHandler(CefRefPtr<ClientApp> app) {
+    //  return NULL;
+    //}
+    virtual CefRefPtr<CefLoadHandler> GetLoadHandler() { return nullptr; }
+
 
     virtual bool OnBeforeNavigation(CefRefPtr<ClientApp> app,
        CefRefPtr<CefBrowser> browser,
@@ -84,8 +88,11 @@ class ClientApp : public CefApp,
   ClientApp();
 
   // CefApp methods:
+  //virtual void OnRegisterCustomSchemes(
+  //   CefRefPtr<CefSchemeRegistrar> registrar) OVERRIDE;
   virtual void OnRegisterCustomSchemes(
-     CefRefPtr<CefSchemeRegistrar> registrar) OVERRIDE;
+      CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE;
+
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
       OVERRIDE { return this; }
   virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler()
@@ -109,6 +116,7 @@ class ClientApp : public CefApp,
   // other.
   virtual bool OnProcessMessageReceived(
      CefRefPtr<CefBrowser> browser,
+     CefRefPtr<CefFrame> frame,
      CefProcessId source_process,
      CefRefPtr<CefProcessMessage> message) OVERRIDE;
 
@@ -121,11 +129,13 @@ class ClientApp : public CefApp,
  private:
   std::string GetExtensionJSSource();
 // CefRenderProccessHandler methods:
+/*
   virtual bool OnBeforeNavigation(CefRefPtr<CefBrowser> browser,
      CefRefPtr<CefFrame> frame,
      CefRefPtr<CefRequest> request,
      NavigationType navigation_type,
      bool is_redirect) OVERRIDE;
+     */
 
   // Set of supported RenderDelegates.
   RenderDelegateSet render_delegates_;

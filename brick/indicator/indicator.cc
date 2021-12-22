@@ -15,7 +15,7 @@ BrickIndicator::BrickIndicator(std::string icons_dir)
      icons_folder_(icons_dir),
      idle_(true),
      extended_status_(true),
-     icon_(NULL),
+     icon_(nullptr),
      unity_launcher_ (nullptr) {
 
   Init();

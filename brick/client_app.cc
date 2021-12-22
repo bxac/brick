@@ -20,7 +20,7 @@ ClientApp::ClientApp()
 
 void
 ClientApp::OnRegisterCustomSchemes(
-    CefRefPtr<CefSchemeRegistrar> registrar) {
+    CefRawPtr<CefSchemeRegistrar> registrar) {
 
   // Default schemes that support cookies.
   cookieable_schemes_.push_back("http");
@@ -47,6 +47,7 @@ ClientApp::OnWebKitInitialized() {
 bool
 ClientApp::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message) {
 
@@ -80,7 +81,7 @@ ClientApp::OnProcessMessageReceived(
           arguments.push_back(helper::ListValueToV8Value(messageArgs, i));
         }
 
-        callbackFunction->ExecuteFunction(NULL, arguments);
+        callbackFunction->ExecuteFunction(nullptr, arguments);
       }
 
       context->Exit();
@@ -119,7 +120,7 @@ ClientApp::OnProcessMessageReceived(
   return handled;
 }
 
-
+/* 
 bool
 ClientApp::OnBeforeNavigation(CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
@@ -149,6 +150,7 @@ ClientApp::OnBeforeNavigation(CefRefPtr<CefBrowser> browser,
 
   return false;
 }
+*/
 
 std::string
 ClientApp::GetExtensionJSSource() {

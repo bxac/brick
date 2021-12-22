@@ -6,7 +6,7 @@
 
 #include "include/cef_base.h"
 
-class EventObject : public CefBase {
+class EventObject : public CefBaseRefCounted {
  public:
 	/**
 	 * Default empty constructor

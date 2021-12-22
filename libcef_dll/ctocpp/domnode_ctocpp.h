@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,54 +9,57 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
+// $hash=76e4928368797aa342ddaec6b62b59e8b4a42052$
+//
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_DOMNODE_CTOCPP_H_
 #define CEF_LIBCEF_DLL_CTOCPP_DOMNODE_CTOCPP_H_
 #pragma once
 
-#ifndef USING_CEF_SHARED
-#pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
-#else  // USING_CEF_SHARED
+#if !defined(WRAPPING_CEF_SHARED)
+#error This file can be included wrapper-side only
+#endif
 
-#include "include/cef_dom.h"
 #include "include/capi/cef_dom_capi.h"
-#include "libcef_dll/ctocpp/ctocpp.h"
+#include "include/cef_dom.h"
+#include "libcef_dll/ctocpp/ctocpp_ref_counted.h"
 
 // Wrap a C structure with a C++ class.
 // This class may be instantiated and accessed wrapper-side only.
 class CefDOMNodeCToCpp
-    : public CefCToCpp<CefDOMNodeCToCpp, CefDOMNode, cef_domnode_t> {
+    : public CefCToCppRefCounted<CefDOMNodeCToCpp, CefDOMNode, cef_domnode_t> {
  public:
   CefDOMNodeCToCpp();
+  virtual ~CefDOMNodeCToCpp();
 
   // CefDOMNode methods.
-  Type GetType() OVERRIDE;
-  bool IsText() OVERRIDE;
-  bool IsElement() OVERRIDE;
-  bool IsEditable() OVERRIDE;
-  bool IsFormControlElement() OVERRIDE;
-  CefString GetFormControlElementType() OVERRIDE;
-  bool IsSame(CefRefPtr<CefDOMNode> that) OVERRIDE;
-  CefString GetName() OVERRIDE;
-  CefString GetValue() OVERRIDE;
-  bool SetValue(const CefString& value) OVERRIDE;
-  CefString GetAsMarkup() OVERRIDE;
-  CefRefPtr<CefDOMDocument> GetDocument() OVERRIDE;
-  CefRefPtr<CefDOMNode> GetParent() OVERRIDE;
-  CefRefPtr<CefDOMNode> GetPreviousSibling() OVERRIDE;
-  CefRefPtr<CefDOMNode> GetNextSibling() OVERRIDE;
-  bool HasChildren() OVERRIDE;
-  CefRefPtr<CefDOMNode> GetFirstChild() OVERRIDE;
-  CefRefPtr<CefDOMNode> GetLastChild() OVERRIDE;
-  CefString GetElementTagName() OVERRIDE;
-  bool HasElementAttributes() OVERRIDE;
-  bool HasElementAttribute(const CefString& attrName) OVERRIDE;
-  CefString GetElementAttribute(const CefString& attrName) OVERRIDE;
-  void GetElementAttributes(AttributeMap& attrMap) OVERRIDE;
+  Type GetType() override;
+  bool IsText() override;
+  bool IsElement() override;
+  bool IsEditable() override;
+  bool IsFormControlElement() override;
+  CefString GetFormControlElementType() override;
+  bool IsSame(CefRefPtr<CefDOMNode> that) override;
+  CefString GetName() override;
+  CefString GetValue() override;
+  bool SetValue(const CefString& value) override;
+  CefString GetAsMarkup() override;
+  CefRefPtr<CefDOMDocument> GetDocument() override;
+  CefRefPtr<CefDOMNode> GetParent() override;
+  CefRefPtr<CefDOMNode> GetPreviousSibling() override;
+  CefRefPtr<CefDOMNode> GetNextSibling() override;
+  bool HasChildren() override;
+  CefRefPtr<CefDOMNode> GetFirstChild() override;
+  CefRefPtr<CefDOMNode> GetLastChild() override;
+  CefString GetElementTagName() override;
+  bool HasElementAttributes() override;
+  bool HasElementAttribute(const CefString& attrName) override;
+  CefString GetElementAttribute(const CefString& attrName) override;
+  void GetElementAttributes(AttributeMap& attrMap) override;
   bool SetElementAttribute(const CefString& attrName,
-      const CefString& value) OVERRIDE;
-  CefString GetElementInnerText() OVERRIDE;
+                           const CefString& value) override;
+  CefString GetElementInnerText() override;
+  CefRect GetElementBounds() override;
 };
 
-#endif  // USING_CEF_SHARED
 #endif  // CEF_LIBCEF_DLL_CTOCPP_DOMNODE_CTOCPP_H_

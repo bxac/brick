@@ -13,6 +13,8 @@
 #include "include/cef_urlrequest.h"
 #include "include/cef_dialog_handler.h"
 
+#define OVERRIDE override
+
 class DownloadClientDialogCallback : public CefFileDialogCallback {
  public:
   explicit DownloadClientDialogCallback(std::string url);

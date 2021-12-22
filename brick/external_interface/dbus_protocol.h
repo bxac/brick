@@ -15,8 +15,9 @@
 #include "brick/event/indicator_tooltip_event.h"
 #include "brick/event/event_handler.h"
 
+#define OVERRIDE override
 
-class DBusProtocol : public CefBase,
+class DBusProtocol : public CefBaseRefCounted,
                      public EventHandler<AccountListEvent>,
                      public EventHandler<AccountSwitchEvent>,
                      public EventHandler<IndicatorBadgeEvent>,

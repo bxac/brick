@@ -215,7 +215,7 @@ AppWindowMessageDelegate::OnProcessMessageReceived(
     response_args->SetInt(1, error);
 
     // Send response
-    browser->SendProcessMessage(PID_RENDERER, response);
+    browser->GetMainFrame()->SendProcessMessage(PID_RENDERER, response);
   }
 
   return true;

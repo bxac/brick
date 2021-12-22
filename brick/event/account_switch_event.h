@@ -11,24 +11,24 @@
 
 class AccountSwitchEvent : public Event {
  public:
-  AccountSwitchEvent(const EventSender* sender, const Account *account) :
+  AccountSwitchEvent(const EventSender* sender, CefRefPtr<Account> account/*const Account *account*/) :
      Event (sender),
      account_ (account) {
   }
 
-  explicit AccountSwitchEvent(const Account *account) :
+  explicit AccountSwitchEvent(CefRefPtr<Account> account/*const Account *account*/) :
       Event (nullptr),
       account_ (account) {
   }
 
   virtual ~AccountSwitchEvent() { }
 
-  const Account *getAccount() {
+  CefRefPtr<Account>/*const Account **/getAccount() {
     return account_;
   }
 
  private:
-  const Account *account_;
+  CefRefPtr<Account>/*const Account **/account_;
 
 IMPLEMENT_REFCOUNTING(AccountSwitchEvent);
 };

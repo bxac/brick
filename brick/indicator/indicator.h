@@ -15,7 +15,7 @@
 #include "brick/event/event_handler.h"
 #include "brick/event/event_bus.h"
 
-class BrickIndicator : public CefBase,
+class BrickIndicator : public CefBaseRefCounted,
                    public EventHandler<AccountListEvent>,
                    public EventHandler<AccountSwitchEvent> {
 
